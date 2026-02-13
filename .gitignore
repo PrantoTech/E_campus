@@ -7,7 +7,7 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Django migrations (optional, agar auto-generate karna ho)
+# Django migrations
 */migrations/
 
 # Database files
