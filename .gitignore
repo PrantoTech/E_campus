@@ -1,0 +1,18 @@
+# Virtual environment
+venv/
+myenv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Django migrations (optional, agar auto-generate karna ho)
+*/migrations/
+
+# Database files
+db.sqlite3
+
+# IDE settings
+.vscode/
+.idea/
