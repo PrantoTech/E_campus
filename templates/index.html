@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technique Polytechnic Institute</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <div id="app-wrapper">
+
+        <!--Navbar-->
+        <nav id="navbar" class="navbar">
+            <div class="container nav-container">
+                <div class="nav-brand">
+                    <img src="{% static 'images\logo.jpeg' %}" alt="TPI Logo" class="logo-img" onerror="this.style.background='#1e3a5f'">
+                    <div class="brand-text">
+                        <h1 id="nav-college-name">Technique Polytechnic Institute</h1>
+                        <p>Excellence in Technical Education</p>
+                    </div>
+                </div>
+
+                <div class="nav-links desktop-only">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#courses" class="nav-link">Courses</a>
+                    <a href="#announcements" class="nav-link">Notices</a>
+                    <a href="#gallery" class="nav-link">Gallery</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm">Login</button>
+                </div>
+
+                <button onclick="toggleMobileMenu()" class="mobile-menu-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!--Menu Section-->
+            <div id="mobile-menu" class="mobile-menu">
+                <a href="#home" onclick="closeMobileMenu()">Home</a>
+                <a href="#about" onclick="closeMobileMenu()">About</a>
+                <a href="#courses" onclick="closeMobileMenu()">Courses</a>
+                <a href="#announcements" onclick="closeMobileMenu()">Notices</a>
+                <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
+                <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+                <button onclick="openLoginModal(); closeMobileMenu();" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Login</button>
+            </div>
+        </nav>
+
+        <!--Hero Section-->
+        <section id="home" class="hero-section">
+            <div class="hero-bg">
+                <div class="banner-slide">
+                    <div class="overlay"></div>
+                    <img src="{% static 'images\bg_image1.png' %}" alt="Campus Banner">
+                </div>
+                <div class="banner-slide">
+                    <div class="overlay"></div>
+                    <img src="{% static "images\bg_image2.jpg" %}" alt="College Campus">
+                </div>
+                <div class="banner-slide graphic-slide">
+                    <div class="overlay"></div>
+                    <svg viewBox="0 0 100 100" class="hero-graphic">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="0.5" />
+                        <path d="M50 10 L90 50 L50 90 L10 50 Z" fill="none" stroke="currentColor" stroke-width="0.5" />
+                        <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="0.5" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div class="hero-text slide-in">
+                    <img src="{% static 'images\logo.jpeg' %}" alt="TPI Logo" class="hero-logo pulse-glow">
+                    <h1 id="hero-college-name">Technique Polytechnic Institute</h1>
+                    <p id="hero-welcome" class="hero-subtitle">Welcome to Excellence in Technical Education</p>
+                    <p class="hero-desc">Shaping tomorrow's engineers and technologists since 2008. Join us in our journey of innovation and excellence.</p>
+                    
+                    <div class="hero-buttons">
+                        <a href="#courses" class="btn btn-primary btn-lg">📚 Explore Courses</a>
+                        <a href="#contact" class="btn btn-outline-white btn-lg">📞 Contact Us</a>
+                        <a href="#about" class="btn btn-outline-amber btn-lg">ℹ️ Learn More</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </section>
+
+        <!--Stats section-->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item fade-in">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Years of Excellence</div>
+                    </div>
+                    <div class="stat-item fade-in" style="animation-delay: 0.1s">
+                        <div class="stat-number">5000+</div>
+                        <div class="stat-label">Alumni Network</div>
+                    </div>
+                    <div class="stat-item fade-in" style="animation-delay: 0.2s">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Expert Faculty</div>
+                    </div>
+                    <div class="stat-item fade-in" style="animation-delay: 0.3s">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Placement Rate</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--About Section-->
+        <section id="about" class="section-padding bg-white">
+            <div class="container">
+                <div class="section-header">
+                    <h2>About Our Institution</h2>
+                    <div class="divider"></div>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-text slide-in">
+                        <h3>🏛️ Our History</h3>
+                        <p><strong>Established in 2008</strong>, Technique Polytechnic Institute has been a pioneer in technical education in the region. What started as a vision to provide quality polytechnic education has grown into one of the most respected technical institutions.</p>
+                        <p>Over the years, we have produced thousands of skilled technicians and engineers who are now contributing to various industries across the nation and abroad.</p>
+                    </div>
+                    <div class="about-features">
+                        <div class="features-wrapper hover-lift">
+                            <div class="feature-box">
+                                <div class="icon">🎓</div>
+                                <div class="title">2008</div>
+                                <div class="subtitle">Established</div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="icon">🏆</div>
+                                <div class="title">AICTE</div>
+                                <div class="subtitle">Approved</div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="icon">📍</div>
+                                <div class="title">Hooghly</div>
+                                <div class="subtitle">Location</div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="icon">⭐</div>
+                                <div class="title">A Grade</div>
+                                <div class="subtitle">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vision-mission-grid">
+                    <div class="vm-card card-gradient hover-lift border-amber">
+                        <div class="vm-header"><span class="vm-icon">👁️</span><h3>Our Vision</h3></div>
+                        <p>To be a center of excellence in technical education, producing skilled professionals who are globally competitive, ethically responsible, and committed to society.</p>
+                    </div>
+                    <div class="vm-card card-gradient hover-lift border-blue">
+                        <div class="vm-header"><span class="vm-icon">🎯</span><h3>Our Mission</h3></div>
+                        <ul class="vm-list">
+                            <li>✓ Provide industry-relevant technical education</li>
+                            <li>✓ Foster innovation and research aptitude</li>
+                            <li>✓ Develop ethical and socially responsible engineers</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="principal-msg">
+                    <div class="msg-content">
+                        <div class="principal-avatar">
+                            <img src="{% static 'images\pricipale_image.png' %}" alt="">
+                        </div>
+                        <div class="msg-text">
+                            <h3>Principal's Message</h3>
+                            <p>"At Technique Polytechnic Institute, we believe in nurturing not just technical skills but also character and values. Our dedicated faculty ensures every student receives the best education."</p>
+                            <p id="principal-name-display" class="principal-name">— Dr. Avijit Karmakar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--Courses-->
+        <section id="courses" class="section-padding bg-gray">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Courses & Departments</h2>
+                    <div class="divider"></div>
+                    <p class="section-sub">Explore our diverse range of diploma programs</p>
+                </div>
+                
+                <div class="courses-grid">
+                    <div class="course-card hover-lift group">
+                        <div class="course-img bg-blue">
+                            <span class="course-icon">💻</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Computer Science & Engineering</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 60 Seats</span></div>
+                            <p>Learn programming, software development, databases, and modern computing technologies.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                    <div class="course-card hover-lift group">
+                        <div class="course-img bg-green">
+                            <span class="course-icon">📡</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Electronics & Communication</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 60 Seats</span></div>
+                            <p>Master electronic circuits, communication systems, and embedded technologies.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                    <div class="course-card hover-lift group">
+                        <div class="course-img bg-orange">
+                            <span class="course-icon">⚙️</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Mechanical Engineering</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 60 Seats</span></div>
+                            <p>Study mechanics, thermodynamics, manufacturing, and machine design principles.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                     <div class="course-card hover-lift group">
+                        <div class="course-img bg-yellow">
+                            <span class="course-icon">⚡</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Electrical Engineering</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 60 Seats</span></div>
+                            <p>Learn about power systems, electrical machines, and control systems.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                     <div class="course-card hover-lift group">
+                        <div class="course-img bg-purple">
+                            <span class="course-icon">🏗️</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Civil Engineering</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 60 Seats</span></div>
+                            <p>Design and construct infrastructure including buildings, roads, and bridges.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                     <div class="course-card hover-lift group">
+                        <div class="course-img bg-red">
+                            <span class="course-icon">🚗</span>
+                        </div>
+                        <div class="course-body">
+                            <h3>Automobile Engineering</h3>
+                            <div class="course-meta"><span>⏱️ 3 Years</span><span>📋 30 Seats</span></div>
+                            <p>Specialize in vehicle design, maintenance, and automotive technologies.</p>
+                            <div class="course-footer"><strong>Eligibility:</strong> 10th Pass with Mathematics & Science</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="announcements" class="section-padding bg-light-gradient">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Latest Announcements</h2>
+                    <div class="divider"></div>
+                    <p class="section-sub">Stay updated with important notices and events</p>
+                </div>
+                
+                <div class="announcement-grid">
+                    <div class="announcement-card urgent hover-lift">
+                        <div class="ann-date">
+                            <span class="day">15</span>
+                            <span class="month">JAN</span>
+                        </div>
+                        <div class="ann-content">
+                            <div class="ann-tag red">🔴 Urgent</div>
+                            <h3>Exam Schedule Released</h3>
+                            <p>Final semester exams from 15th Jan 2025. Download the routine from the student portal.</p>
+                        </div>
+                    </div>
+
+                    <div class="announcement-card info hover-lift">
+                        <div class="ann-date">
+                            <span class="day">20</span>
+                            <span class="month">JAN</span>
+                        </div>
+                        <div class="ann-content">
+                            <div class="ann-tag blue">📅 Upcoming</div>
+                            <h3>Campus Placement Drive</h3>
+                            <p>TCS and Infosys visiting on 20th Jan. Final year students please register.</p>
+                        </div>
+                    </div>
+
+                    <div class="announcement-card normal hover-lift">
+                        <div class="ann-date">
+                            <span class="day">10</span>
+                            <span class="month">JAN</span>
+                        </div>
+                        <div class="ann-content">
+                            <div class="ann-tag green">🏃 Sports</div>
+                            <h3>Annual Sports Day</h3>
+                            <p>Registration open till 10th Jan. Events include Cricket, Football, and Athletics.</p>
+                        </div>
+                    </div>
+
+                    <div class="announcement-card normal hover-lift">
+                        <div class="ann-date">
+                            <span class="day">05</span>
+                            <span class="month">JAN</span>
+                        </div>
+                        <div class="ann-content">
+                            <div class="ann-tag amber">📚 Library</div>
+                            <h3>Library Timing Change</h3>
+                            <p>Extended hours during exam week: 8:00 AM - 10:00 PM.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="section-padding bg-white">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Campus Gallery</h2>
+                    <div class="divider"></div>
+                </div>
+                <div class="gallery-tabs">
+                    <button onclick="showGallery('campus')" id="tab-campus" class="btn btn-primary btn-pill">🏛️ Campus</button>
+                    <button onclick="showGallery('events')" id="tab-events" class="btn btn-secondary btn-pill">🎉 Events</button>
+                </div>
+                
+                <div id="gallery-campus" class="gallery-grid">
+                    <div class="gallery-item bg-blue"><span>🏛️</span><p>Main Building</p></div>
+                    <div class="gallery-item bg-green"><span>🔬</span><p>Science Lab</p></div>
+                    <div class="gallery-item bg-purple"><span>💻</span><p>Computer Lab</p></div>
+                    <div class="gallery-item bg-orange"><span>📚</span><p>Library</p></div>
+                    <div class="gallery-item bg-teal"><span>🏭</span><p>Workshop</p></div>
+                    <div class="gallery-item bg-pink"><span>🎾</span><p>Sports Ground</p></div>
+                </div>
+
+                <div id="gallery-events" class="gallery-grid hidden">
+                    <div class="gallery-item bg-amber"><span>🎓</span><p>Convocation</p></div>
+                    <div class="gallery-item bg-cyan"><span>🏆</span><p>Sports Day</p></div>
+                    <div class="gallery-item bg-rose"><span>🎪</span><p>Tech Fest</p></div>
+                    <div class="gallery-item bg-lime"><span>🎤</span><p>Cultural Night</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-padding bg-gray">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Contact Us</h2>
+                    <div class="divider"></div>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="info-card">
+                            <h3>📍 College Address</h3>
+                            <div class="info-row"><span class="icon">🏛️</span><div><p class="bold">Technique Polytechnic Institute</p><p>Hooghly, West Bengal - 741126</p></div></div>
+                            <div class="info-row"><span class="icon">📞</span><div><p>+91 9800-123-456</p></div></div>
+                            <div class="info-row"><span class="icon">📧</span><div><p>info@techniquepoly.edu</p></div></div>
+                        </div>
+                        <div class="map-placeholder">
+                            <span class="icon">🗺️</span>
+                            <p>Interactive Map Placeholder</p>
+                        </div>
+                    </div>
+                    <div class="contact-form-wrapper">
+                        <h3>✉️ Send us a Message</h3>
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="contact-name" required placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" id="contact-email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group">
+                                <label>Subject *</label>
+                                <select id="contact-subject">
+                                    <option value="">Select a subject</option>
+                                    <option value="admission">Admission</option>
+                                    <option value="course">Course Info</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Message *</label>
+                                <textarea id="contact-message" rows="4" required placeholder="Write your message..."></textarea>
+                            </div>
+                            <button type="submit" id="contact-submit" class="btn btn-primary btn-block">Send Message 📤</button>
+                        </form>
+                        <div id="contact-success" class="alert alert-success hidden">✅ Message sent successfully!</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <div class="footer-brand">
+                            <img src="https://www.local18.in/_next/image/?url=https%3A%2F%2Fmedia.collegedekho.com%2Fmedia%2Fimg%2Finstitute%2Flogo%2FLOGO_big.jpeg.jpg%3Fimwidth%3D474&w=3840&q=75" class="footer-logo">
+                            <h3>Technique Polytechnic</h3>
+                        </div>
+                        <p>Empowering students with technical skills since 2008.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#courses">Courses</a></li>
+                            <li><a href="#announcements">Notices</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Connect</h4>
+                        <div class="social-links">
+                            <a href="#" class="social-icon">💼</a>
+                            <a href="#" class="social-icon">📘</a>
+                        </div>
+                        <p class="footer-contact">info@techniquepoly.edu</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2024 Technique Polytechnic Institute. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <div id="login-modal" class="modal hidden">
+            <div class="modal-backdrop" onclick="closeLoginModal()"></div>
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeLoginModal()">×</button>
+                <div class="modal-header">
+                    <span class="icon">🔐</span>
+                    <h3>Welcome Back</h3>
+                    <p>Login to your account</p>
+                </div>
+                <div class="login-tabs">
+                    <button id="login-tab-student" class="active" onclick="switchLoginType('student')">🎓 Student</button>
+                    <button id="login-tab-admin" onclick="switchLoginType('admin')">👨‍💼 Admin</button>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label id="login-id-label">Student ID *</label>
+                        <input type="text" id="login-id" required placeholder="Enter ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="login-password" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <div id="login-success" class="alert alert-success hidden">✅ Login successful!</div>
+                <div class="demo-creds">
+                    <p>📌 Demo: Student (TPI2024001 / student123)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="{% static 'js/home.js' %}"></script>
+</body>
+</html>
