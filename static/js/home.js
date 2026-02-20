@@ -60,17 +60,36 @@ function closeLoginModal() {
 function switchLoginType(type) {
     currentLoginType = type;
     const studentTab = document.getElementById('login-tab-student');
+    const facultyTab = document.getElementById('login-tab-faculty');
     const adminTab = document.getElementById('login-tab-admin');
     const idLabel = document.getElementById('login-id-label');
     
+    const demoCredsElement = document.querySelector('.demo-creds p');
+    
     if (type === 'student') {
         studentTab.classList.add('active');
+        facultyTab.classList.remove('active');
         adminTab.classList.remove('active');
         idLabel.textContent = 'Student ID *';
+        if (demoCredsElement) {
+            demoCredsElement.textContent = '📌 Demo: Student (TPI2024001 / student123)';
+        }
+    } else if (type === 'faculty') {
+        facultyTab.classList.add('active');
+        studentTab.classList.remove('active');
+        adminTab.classList.remove('active');
+        idLabel.textContent = 'Faculty ID *';
+        if (demoCredsElement) {
+            demoCredsElement.textContent = '📌 Demo: Faculty (FAC001 / faculty123)';
+        }
     } else {
         adminTab.classList.add('active');
+        facultyTab.classList.remove('active');
         studentTab.classList.remove('active');
         idLabel.textContent = 'Admin Username *';
+        if (demoCredsElement) {
+            demoCredsElement.textContent = '📌 Demo: Admin (admin / admin123)';
+        }
     }
 }
 
@@ -134,13 +153,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let isValid = false;
             if (currentLoginType === 'student' && loginId === 'TPI2024001' && password === 'student123') {
                 isValid = true;
+            } else if (currentLoginType === 'faculty' && loginId === 'FAC001' && password === 'faculty123') {
+                isValid = true;
             } else if (currentLoginType === 'admin' && loginId === 'admin' && password === 'admin123') {
                 isValid = true;
             }
             
             if (isValid) {
                 document.getElementById('login-success').classList.remove('hidden');
-                showToast(`Welcome, ${currentLoginType === 'admin' ? 'Administrator' : 'Student'}!`, 'success');
+                let userType = currentLoginType === 'admin' ? 'Administrator' : (currentLoginType === 'faculty' ? 'Faculty' : 'Student');
+                showToast(`Welcome, ${userType}!`, 'success');
                 setTimeout(() => closeLoginModal(), 2000);
             } else {
                 showToast('Invalid credentials. Check demo info.', 'error');

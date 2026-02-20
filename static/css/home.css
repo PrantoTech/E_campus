@@ -1171,6 +1171,21 @@ body {
     color: #2563eb;
 }
 
+.signUp {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.signUp a {
+    display: inline-block;
+    width: auto;
+    text-decoration: none;
+}
+
 /* --- Toast --- */
 .toast-container {
     position: fixed;
