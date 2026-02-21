@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home_footer.css' %}">
 </head>
 <body>
     <div id="app-wrapper">
@@ -406,38 +407,8 @@
             </div>
         </section>
 
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-grid">
-                    <div class="footer-col">
-                        <div class="footer-brand">
-                            <img src="{% static 'images\logo.jpeg' %}" class="footer-logo">
-                            <h3>Technique Polytechnic</h3>
-                        </div>
-                        <p>Empowering students with technical skills since 2008.</p>
-                    </div>
-                    <div class="footer-col">
-                        <h4>Quick Links</h4>
-                        <ul>
-                            <li><a href="#about">About Us</a></li>
-                            <li><a href="#courses">Courses</a></li>
-                            <li><a href="#announcements">Notices</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4>Connect</h4>
-                        <div class="social-links">
-                            <a href="#" class="social-icon">💼</a>
-                            <a href="#" class="social-icon">📘</a>
-                        </div>
-                        <p class="footer-contact">info@techniquepoly.edu</p>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>© 2024 Technique Polytechnic Institute. All Rights Reserved.</p>
-                </div>
-            </div>
-        </footer>
+        <!-- Include Footer -->
+        {% include "home_footer.html" %}
 
         <div id="login-modal" class="modal hidden">
             <div class="modal-backdrop" onclick="closeLoginModal()"></div>
