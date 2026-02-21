@@ -372,8 +372,7 @@
                             <div class="info-row"><span class="icon">📧</span><div><p>info@techniquepoly.edu</p></div></div>
                         </div>
                         <div class="map-placeholder">
-                            <span class="icon">🗺️</span>
-                            <p>Interactive Map Placeholder</p>
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.9681793333593!2d88.3609457!3d22.914544499999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f8923370d786c5%3A0x3f303091da751223!2sTECHNIQUE%20POLYTECHNIC%20INSTITUTE!5e0!3m2!1sen!2sin!4v1771654887962!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
                     <div class="contact-form-wrapper">
@@ -412,7 +411,7 @@
                 <div class="footer-grid">
                     <div class="footer-col">
                         <div class="footer-brand">
-                            <img src="https://www.local18.in/_next/image/?url=https%3A%2F%2Fmedia.collegedekho.com%2Fmedia%2Fimg%2Finstitute%2Flogo%2FLOGO_big.jpeg.jpg%3Fimwidth%3D474&w=3840&q=75" class="footer-logo">
+                            <img src="{% static 'images\logo.jpeg' %}" class="footer-logo">
                             <h3>Technique Polytechnic</h3>
                         </div>
                         <p>Empowering students with technical skills since 2008.</p>
@@ -467,10 +466,111 @@
                 </form>
                 <div id="login-success" class="alert alert-success hidden">✅ Login successful!</div>
                 <div class="signUp">
-                    <a href="#">Create an account</a>
+                    <a onclick="openSignUpModal()">Create an account</a>
                 </div>
                 <div class="demo-creds">
                     <p>📌 Demo: Student (TPI2024001 / student123)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Page-->
+        <div id="signUp-modal" class="modal hidden">
+            <div class="modal-backdrop" onclick="closeLoginModal()"></div>
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeSignUpModal()">×</button>
+                <div class="modal-header">
+                    <span class="icon">🔐</span>
+                    <h3>Welcome To TPI</h3>
+                    <p>Register to your account</p>
+                </div>
+                <div class="signUp-form">
+                    <form id="signUp-form">
+                        <div class="form-group">
+                            <label id="signUp-id-label">Full Name: *</label>
+                            <input type="text" id="signUp-name" name="name" required placeholder="Enter Name">
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">DOB *</label>
+                            <input type="date" id="signUp-DOB" name="dob" required placeholder="Enter Date of Birth">
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Gender *</label>
+                            <select name="gender" id="signUp-gender" required >
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Email *</label>
+                            <input type="email" id="signUp-email" name="email" required placeholder="Enter Email">
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Mobile *</label>
+                            <input type="tel" id="signUp-mobile" name="pone" pattern="[0-9]{10}" required placeholder="Enter mobile no">
+                        </div>
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="signUp-password" name="password" required placeholder="Enter password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password *</label>
+                            <input type="password" id="signUp-password" name="confirm_password" required placeholder="Confirm password">
+                        </div>
+                        <div class="form-group">
+                            <label>Roll Number *</label>
+                            <input type="number" id="signUp-roll-no" name="roll_no" required placeholder="Enter Roll No">
+                        </div>
+                        <div class="form-group">
+                            <label>Course *</label>
+                            <select name="course" id="signUp-course" required >
+                                <option value="">Select</option>
+                                <option value="DCST">DCST</option>
+                                <option value="DME">DME</option>
+                                <option value="DCE">DCE</option>
+                                <option value="DSE">DSE</option>
+                                <option value="DCFS">DCFS</option>
+                                <option value="DETC">DETC</option>
+                                <option value="DEE">DEE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Semester *</label>
+                            <select name="semester" id="signUp-sem" required >
+                                <option value="">Select</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Address: *</label>
+                            <textarea name="address" id="signUp-address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Guardian Name: *</label>
+                            <input type="text" id="signUp-guardian-name" name="guardian_name" required placeholder="Enter Name">
+                        </div>
+                        <div class="form-group">
+                            <label id="signUp-id-label">Guardian Contact: *</label>
+                            <input type="tel" id="signUp-guardian-contact" name="guardian_contact" pattern="[0-9]{10}" required placeholder="Enter Name">
+                        </div>
+                        <div class="decleraion">
+                            <input type="checkbox"  required> I confirm that the information is correct.
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Register</button>
+                    </form>
+                </div>
+                <div id="registration-success" class="alert alert-success hidden">✅ Registration successful!</div>
+                <div class="signIn">
+                    <p>
+                        Already have an account? <a onclick="openLoginModal()">Sign in</a>
+                    </p>
                 </div>
             </div>
         </div>

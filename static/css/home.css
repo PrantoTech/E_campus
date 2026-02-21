@@ -1,11 +1,12 @@
 /* --- Variables & Reset --- */
 :root {
-    --primary: #f59e0b;      /* Amber 500 */
-    --primary-hover: #d97706; /* Amber 600 */
-    --secondary: #1e3a5f;    /* Blue 900ish */
+    --primary: #f59e0b;
+    --primary-hover: #d97706;
+    --secondary: #1e3a5f;
     --dark: #0f2744;
     --light: #f9fafb;
     --white: #ffffff;
+    --blue: #3706f7;
     --gray-100: #f3f4f6;
     --gray-200: #e5e7eb;
     --gray-600: #4b5563;
@@ -1171,7 +1172,15 @@ body {
     color: #2563eb;
 }
 
-.signUp {
+/*---SignUp Form--- */
+
+.signUp-form {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.signUp,
+.signIn {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -1180,10 +1189,18 @@ body {
     margin-top: 0.5rem;
 }
 
-.signUp a {
+.decleraion {
+    padding-bottom: 5px;
+    font-size: 1rem;
+}
+
+.signUp a,
+.signIn a {
     display: inline-block;
     width: auto;
     text-decoration: none;
+    cursor: pointer;
+    color: var(--blue);
 }
 
 /* --- Toast --- */

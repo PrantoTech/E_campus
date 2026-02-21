@@ -47,6 +47,7 @@ function showGallery(type) {
 // --- Login Modal Functions ---
 function openLoginModal() {
     document.getElementById('login-modal').classList.remove('hidden');
+    document.getElementById('signUp-modal').classList.add('hidden');
     document.body.style.overflow = 'hidden'; // Prevent scrolling bg
 }
 
@@ -91,6 +92,17 @@ function switchLoginType(type) {
             demoCredsElement.textContent = '📌 Demo: Admin (admin / admin123)';
         }
     }
+}
+
+// --- Registration Form ---
+function openSignUpModal() {
+    document.getElementById('signUp-modal').classList.remove('hidden');
+    document.getElementById('login-modal').classList.add('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling bg
+}
+function closeSignUpModal() {
+    document.getElementById('signUp-modal').classList.add('hidden');
+    closeLoginModal();
 }
 
 // --- Toast Notifications ---
