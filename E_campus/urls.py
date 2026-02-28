@@ -19,6 +19,7 @@ from django.urls import path
 from E_campus import views
 
 urlpatterns = [
-    path('', views.home),
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
+    path('image_gallery/', views.image_gallery, name='image_gallery'),
 ]
