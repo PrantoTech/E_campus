@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="dashboard-header-inner">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p>Technique Polytechnic Institute</p>
+            </div>
+            <div class="dashboard-actions">
+                <a href="/" class="dashboard-btn dashboard-btn-secondary">Home</a>
+                <form action="{% url 'students:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="dashboard-btn dashboard-btn-primary">Logout</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-card">
+            <h2>Welcome, {{ request.user.first_name|default:request.user.username }}</h2>
+
+            {% if profile %}
+            <div class="profile-grid">
+                <div class="profile-item"><h3>Student ID</h3><p>{{ profile.student_id }}</p></div>
+                <div class="profile-item"><h3>Roll Number</h3><p>{{ profile.roll_no }}</p></div>
+                <div class="profile-item"><h3>Email</h3><p>{{ request.user.email }}</p></div>
+                <div class="profile-item"><h3>Mobile</h3><p>{{ profile.mobile }}</p></div>
+                <div class="profile-item"><h3>Course</h3><p>{{ profile.course }}</p></div>
+                <div class="profile-item"><h3>Semester</h3><p>{{ profile.semester }}</p></div>
+                <div class="profile-item"><h3>Date of Birth</h3><p>{{ profile.date_of_birth }}</p></div>
+                <div class="profile-item"><h3>Gender</h3><p>{{ profile.gender }}</p></div>
+                <div class="profile-item profile-item-wide"><h3>Address</h3><p>{{ profile.address|default:'-' }}</p></div>
+                <div class="profile-item"><h3>Guardian Name</h3><p>{{ profile.guardian_name }}</p></div>
+                <div class="profile-item"><h3>Guardian Contact</h3><p>{{ profile.guardian_contact }}</p></div>
+            </div>
+            {% else %}
+            <div class="dashboard-alert">Student profile is not available for this account.</div>
+            {% endif %}
+        </div>
+    </main>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

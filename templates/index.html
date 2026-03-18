@@ -30,7 +30,15 @@
                     <a href="#announcements" class="nav-link">Notices</a>
                     <a href="#gallery" class="nav-link">Gallery</a>
                     <a href="#contact" class="nav-link">Contact</a>
+                    {% if user.is_authenticated and user.student_profile %}
+                    <a href="{% url 'students:dashboard' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Dashboard</a>
+                    <form action="{% url 'students:logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+                    </form>
+                    {% else %}
                     <button onclick="openLoginModal()" class="btn btn-primary btn-sm">Login</button>
+                    {% endif %}
                 </div>
 
                 <button onclick="toggleMobileMenu()" class="mobile-menu-btn">
@@ -48,7 +56,15 @@
                 <a href="#announcements" onclick="closeMobileMenu()">Notices</a>
                 <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
                 <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+                {% if user.is_authenticated and user.student_profile %}
+                <a href="{% url 'students:dashboard' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Dashboard</a>
+                <form action="{% url 'students:logout' %}" method="post" style="margin-top: 0.5rem; width: 100%;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">Logout</button>
+                </form>
+                {% else %}
                 <button onclick="openLoginModal(); closeMobileMenu();" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Login</button>
+                {% endif %}
             </div>
         </nav>
 
@@ -425,9 +441,10 @@
                     <button id="login-tab-admin" onclick="switchLoginType('admin')">👨‍💼 Admin</button>
                 </div>
                 <form id="login-form">
+                    {% csrf_token %}
                     <div class="form-group">
-                        <label id="login-id-label">Student ID *</label>
-                        <input type="text" id="login-id" required placeholder="Enter ID">
+                        <label id="login-id-label">Email *</label>
+                        <input type="text" id="login-id" required placeholder="Enter email">
                     </div>
                     <div class="form-group">
                         <label>Password *</label>
@@ -440,7 +457,7 @@
                     <a onclick="openSignUpModal()">Create an account</a>
                 </div>
                 <div class="demo-creds">
-                    <p>📌 Demo: Student (TPI2024001 / student123)</p>
+                    <p>📌 Admin login uses your Django superuser username and password.</p>
                 </div>
             </div>
         </div>
@@ -457,6 +474,7 @@
                 </div>
                 <div class="signUp-form">
                     <form id="signUp-form">
+                        {% csrf_token %}
                         <div class="form-group">
                             <label id="signUp-id-label">Full Name: *</label>
                             <input type="text" id="signUp-name" name="name" required placeholder="Enter Name">
@@ -480,7 +498,7 @@
                         </div>
                         <div class="form-group">
                             <label id="signUp-id-label">Mobile *</label>
-                            <input type="tel" id="signUp-mobile" name="pone" pattern="[0-9]{10}" required placeholder="Enter mobile no">
+                            <input type="tel" id="signUp-mobile" name="mobile" pattern="[0-9]{10}" required placeholder="Enter mobile no">
                         </div>
                         <div class="form-group">
                             <label>Password *</label>
@@ -488,7 +506,7 @@
                         </div>
                         <div class="form-group">
                             <label>Confirm Password *</label>
-                            <input type="password" id="signUp-password" name="confirm_password" required placeholder="Confirm password">
+                            <input type="password" id="signUp-confirm-password" name="confirm_password" required placeholder="Confirm password">
                         </div>
                         <div class="form-group">
                             <label>Roll Number *</label>
