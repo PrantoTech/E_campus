@@ -1,6 +1,5 @@
 # Virtual environment
 venv/
-myenv/
 
 # Python cache
 __pycache__/
@@ -11,7 +10,7 @@ __pycache__/
 */migrations/
 
 # Database files
-db.sqlite3
+#db.sqlite3
 
 # IDE settings
 .vscode/
