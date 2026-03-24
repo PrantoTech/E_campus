@@ -2,51 +2,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  {% include 'favicon.html' %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body>
-    <header class="dashboard-header">
-        <div class="dashboard-header-inner">
-            <div>
-                <h1>Student Dashboard</h1>
-                <p>Technique Polytechnic Institute</p>
-            </div>
-            <div class="dashboard-actions">
-                <a href="/" class="dashboard-btn dashboard-btn-secondary">Home</a>
-                <form action="{% url 'students:logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="dashboard-btn dashboard-btn-primary">Logout</button>
-                </form>
-            </div>
-        </div>
-    </header>
+  <header>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+  </header>
 
-    <main class="dashboard-main">
-        <div class="dashboard-card">
-            <h2>Welcome, {{ request.user.first_name|default:request.user.username }}</h2>
+  <nav>
+    <a href="#profile">Profile</a>
+    <a href="#fees">Fees</a>
+    <a href="#tasks">Tasks</a>
+    <a href="#attendance">Attendance</a>
+  </nav>
 
-            {% if profile %}
-            <div class="profile-grid">
-                <div class="profile-item"><h3>Student ID</h3><p>{{ profile.student_id }}</p></div>
-                <div class="profile-item"><h3>Roll Number</h3><p>{{ profile.roll_no }}</p></div>
-                <div class="profile-item"><h3>Email</h3><p>{{ request.user.email }}</p></div>
-                <div class="profile-item"><h3>Mobile</h3><p>{{ profile.mobile }}</p></div>
-                <div class="profile-item"><h3>Course</h3><p>{{ profile.course }}</p></div>
-                <div class="profile-item"><h3>Semester</h3><p>{{ profile.semester }}</p></div>
-                <div class="profile-item"><h3>Date of Birth</h3><p>{{ profile.date_of_birth }}</p></div>
-                <div class="profile-item"><h3>Gender</h3><p>{{ profile.gender }}</p></div>
-                <div class="profile-item profile-item-wide"><h3>Address</h3><p>{{ profile.address|default:'-' }}</p></div>
-                <div class="profile-item"><h3>Guardian Name</h3><p>{{ profile.guardian_name }}</p></div>
-                <div class="profile-item"><h3>Guardian Contact</h3><p>{{ profile.guardian_contact }}</p></div>
-            </div>
-            {% else %}
-            <div class="dashboard-alert">Student profile is not available for this account.</div>
-            {% endif %}
-        </div>
-    </main>
-    <script src="{% static 'js/dashboard.js' %}"></script>
+  <div class="container">
+    <div id="profile" class="card">
+      <h2>Profile Details</h2>
+      <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Course:</strong> {{ student.course }}</p>
+    </div>
+
+    <div id="fees" class="card">
+      <h2>Fees Payment</h2>
+      <p>Total Fees: ₹{{ student.total_fees }}</p>
+      <p>Paid: ₹{{ student.paid_fees }}</p>
+      <p>Pending: ₹{{ student.pending_fees }}</p>
+      <button onclick="payFees()">Pay Now</button>
+    </div>
+
+    <div id="tasks" class="card">
+      <h2>Assigned Tasks</h2>
+      <ul id="taskList">
+        {% for task in tasks %}
+          <li>{{ task.title }}</li>
+        {% empty %}
+          <li>No tasks assigned</li>
+        {% endfor %}
+      </ul>
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <div id="attendance" class="card">
+      <h2>Attendance</h2>
+      <p>Classes Attended: {{ student.attended }}</p>
+      <p>Total Classes: {{ student.total_classes }}</p>
+      <p><strong>Percentage:</strong> <span id="attendancePercent"></span>%</p>
+    </div>
+  </div>
+
+  <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
 </html>
