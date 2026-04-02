@@ -48,6 +48,7 @@ function showGallery(type) {
 function openLoginModal() {
     document.getElementById('login-modal').classList.remove('hidden');
     document.getElementById('signUp-modal').classList.add('hidden');
+    backToLoginForm();
     document.body.style.overflow = 'hidden'; // Prevent scrolling bg
 }
 
@@ -55,7 +56,55 @@ function closeLoginModal() {
     document.getElementById('login-modal').classList.add('hidden');
     document.body.style.overflow = '';
     document.getElementById('login-form').reset();
+    const forgotPasswordForm = document.getElementById('forgot-password-form');
+    if (forgotPasswordForm) {
+        forgotPasswordForm.reset();
+    }
+    backToLoginForm();
     document.getElementById('login-success').classList.add('hidden');
+}
+
+function openForgotPasswordForm() {
+    const loginForm = document.getElementById('login-form');
+    const forgotForm = document.getElementById('forgot-password-form');
+    const modalTitle = document.querySelector('#login-modal .modal-header h3');
+    const modalSubtitle = document.querySelector('#login-modal .modal-header p');
+
+    if (currentLoginType !== 'student') {
+        showToast('Forgot password is available for Student login only.', 'error');
+        return;
+    }
+
+    if (loginForm && forgotForm) {
+        loginForm.classList.add('hidden');
+        forgotForm.classList.remove('hidden');
+    }
+
+    if (modalTitle) {
+        modalTitle.textContent = 'Reset Password';
+    }
+    if (modalSubtitle) {
+        modalSubtitle.textContent = 'Verify using Student ID and DOB';
+    }
+}
+
+function backToLoginForm() {
+    const loginForm = document.getElementById('login-form');
+    const forgotForm = document.getElementById('forgot-password-form');
+    const modalTitle = document.querySelector('#login-modal .modal-header h3');
+    const modalSubtitle = document.querySelector('#login-modal .modal-header p');
+
+    if (loginForm && forgotForm) {
+        forgotForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+    }
+
+    if (modalTitle) {
+        modalTitle.textContent = 'Welcome Back';
+    }
+    if (modalSubtitle) {
+        modalSubtitle.textContent = 'Login to your account';
+    }
 }
 
 function switchLoginType(type) {
@@ -65,32 +114,21 @@ function switchLoginType(type) {
     const adminTab = document.getElementById('login-tab-admin');
     const idLabel = document.getElementById('login-id-label');
     
-    const demoCredsElement = document.querySelector('.demo-creds p');
-    
     if (type === 'student') {
         studentTab.classList.add('active');
         facultyTab.classList.remove('active');
         adminTab.classList.remove('active');
         idLabel.textContent = 'Email *';
-        if (demoCredsElement) {
-            demoCredsElement.textContent = '📌 Student login uses your registered email and password.';
-        }
     } else if (type === 'faculty') {
         facultyTab.classList.add('active');
         studentTab.classList.remove('active');
         adminTab.classList.remove('active');
         idLabel.textContent = 'Faculty ID *';
-        if (demoCredsElement) {
-            demoCredsElement.textContent = '📌 Faculty login integration is not enabled yet.';
-        }
     } else {
         adminTab.classList.add('active');
         facultyTab.classList.remove('active');
         studentTab.classList.remove('active');
         idLabel.textContent = 'Admin Username *';
-        if (demoCredsElement) {
-            demoCredsElement.textContent = '📌 Use Django superuser username and password.';
-        }
     }
 }
 
@@ -181,7 +219,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     document.getElementById('contact-success').classList.add('hidden');
                 }, 5000);
-            }, 1500); // 1.5s delay
+            }, 1500);
+        });
+    }
+
+    const forgotPasswordForm = document.getElementById('forgot-password-form');
+    if (forgotPasswordForm) {
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const studentId = document.getElementById('forgot-student-id').value.trim();
+            const dob = document.getElementById('forgot-dob').value;
+            const newPassword = document.getElementById('forgot-new-password').value;
+            const confirmPassword = document.getElementById('forgot-confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showToast('Passwords do not match.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/students/forgot-password/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                    body: new URLSearchParams({
+                        student_id: studentId,
+                        dob,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword,
+                    }),
+                });
+
+                const result = await parseApiResponse(response);
+
+                if (response.ok && result.success) {
+                    showToast(result.message || 'Password reset successful.', 'success');
+                    const loginIdField = document.getElementById('login-id');
+                    if (loginIdField && result.email) {
+                        loginIdField.value = result.email;
+                    }
+                    forgotPasswordForm.reset();
+                    backToLoginForm();
+                } else {
+                    showToast(result.message || 'Unable to reset password.', 'error');
+                }
+            } catch (error) {
+                showToast('Unable to reset password right now. Please try again.', 'error');
+            }
         });
     }
 
@@ -246,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && result.success) {
                     document.getElementById('login-success').classList.remove('hidden');
                     showToast('Student login successful!', 'success');
-                    window.location.href = result.redirect_url || '/students/dashboard/';
+                    window.location.href = result.redirect_url || '/dashboard/';
                 } else {
                     showToast(result.message || 'Invalid student credentials.', 'error');
                 }

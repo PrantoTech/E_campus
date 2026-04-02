@@ -32,6 +32,7 @@ class StudentProfile(models.Model):
 	address = models.TextField(blank=True)
 	guardian_name = models.CharField(max_length=150)
 	guardian_contact = models.CharField(max_length=10)
+	profile_photo = models.ImageField(upload_to='students/profile_photos/', blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta:

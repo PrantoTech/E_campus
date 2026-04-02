@@ -32,11 +32,7 @@
                     <a href="#gallery" class="nav-link">Gallery</a>
                     <a href="#contact" class="nav-link">Contact</a>
                     {% if user.is_authenticated and user.student_profile %}
-                    <a href="{% url 'students:dashboard' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Dashboard</a>
-                    <form action="{% url 'students:logout' %}" method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
-                    </form>
+                    <a href="{% url 'students:dashboard' %}" class="btn btn-primary btn-sm">Dashboard</a>
                     {% else %}
                     <button onclick="openLoginModal()" class="btn btn-primary btn-sm">Login</button>
                     {% endif %}
@@ -58,11 +54,7 @@
                 <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
                 <a href="#contact" onclick="closeMobileMenu()">Contact</a>
                 {% if user.is_authenticated and user.student_profile %}
-                <a href="{% url 'students:dashboard' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Dashboard</a>
-                <form action="{% url 'students:logout' %}" method="post" style="margin-top: 0.5rem; width: 100%;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-secondary" style="width: 100%;">Logout</button>
-                </form>
+                <a href="{% url 'students:dashboard' %}" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Dashboard</a>
                 {% else %}
                 <button onclick="openLoginModal(); closeMobileMenu();" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Login</button>
                 {% endif %}
@@ -454,13 +446,37 @@
                         <input type="password" id="login-password" required placeholder="Enter password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    <div class="form-link-row">
+                        <a onclick="openForgotPasswordForm()">Forgot Password?</a>
+                    </div>
+                </form>
+
+                <form id="forgot-password-form" class="hidden">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Student ID *</label>
+                        <input type="text" id="forgot-student-id" required placeholder="Enter student ID (e.g. TPI55)">
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth *</label>
+                        <input type="date" id="forgot-dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password *</label>
+                        <input type="password" id="forgot-new-password" required minlength="8" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" id="forgot-confirm-password" required minlength="8" placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+                    <div class="form-link-row">
+                        <a onclick="backToLoginForm()">Back to Login</a>
+                    </div>
                 </form>
                 <div id="login-success" class="alert alert-success hidden">✅ Login successful!</div>
                 <div class="signUp">
                     <a onclick="openSignUpModal()">Create an account</a>
-                </div>
-                <div class="demo-creds">
-                    <p>📌 Admin login uses your Django superuser username and password.</p>
                 </div>
             </div>
         </div>

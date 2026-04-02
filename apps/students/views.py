@@ -5,6 +5,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
+from datetime import date
 
 from .models import StudentProfile
 
@@ -104,12 +105,81 @@ def student_login(request):
 	return JsonResponse({'success': True, 'redirect_url': '/students/dashboard/'})
 
 
+@require_POST
+def student_forgot_password(request):
+	student_id = request.POST.get('student_id', '').strip().upper()
+	dob = request.POST.get('dob', '').strip()
+	new_password = request.POST.get('new_password', '')
+	confirm_password = request.POST.get('confirm_password', '')
+
+	if not student_id or not dob or not new_password or not confirm_password:
+		return JsonResponse({'success': False, 'message': 'Please fill all required fields.'}, status=400)
+
+	if new_password != confirm_password:
+		return JsonResponse({'success': False, 'message': 'Passwords do not match.'}, status=400)
+
+	if len(new_password) < 8:
+		return JsonResponse({'success': False, 'message': 'Password must be at least 8 characters.'}, status=400)
+
+	try:
+		dob_date = date.fromisoformat(dob)
+	except ValueError:
+		return JsonResponse({'success': False, 'message': 'Enter a valid date of birth.'}, status=400)
+
+	profile = StudentProfile.objects.select_related('user').filter(student_id=student_id, date_of_birth=dob_date).first()
+	if profile is None:
+		return JsonResponse({'success': False, 'message': 'Student ID and DOB did not match.'}, status=404)
+
+	user = profile.user
+	user.set_password(new_password)
+	user.save(update_fields=['password'])
+
+	return JsonResponse({
+		'success': True,
+		'message': 'Password reset successful. Please login with your new password.',
+		'email': user.email,
+	})
+
+
 @login_required
 def student_dashboard(request):
-	if not hasattr(request.user, 'student_profile'):
-		return render(request, 'students/dashboard.html', {'profile': None})
+	profile = getattr(request.user, 'student_profile', None)
+	display_name = request.user.get_full_name().strip() or request.user.username
+	name_parts = [part[0].upper() for part in display_name.split() if part]
+	avatar_text = ''.join(name_parts[:2]) if name_parts else display_name[:2].upper()
 
-	return render(request, 'students/dashboard.html', {'profile': request.user.student_profile})
+	return render(request, 'student_dashboard.html', {
+		'profile': profile,
+		'display_name': display_name,
+		'avatar_text': avatar_text,
+	})
+
+
+@require_POST
+@login_required
+def upload_profile_photo(request):
+	profile = getattr(request.user, 'student_profile', None)
+	if profile is None:
+		return redirect('/students/dashboard/#profile')
+
+	photo = request.FILES.get('profile_photo')
+	if photo is None:
+		return redirect('/students/dashboard/#profile')
+
+	content_type = getattr(photo, 'content_type', '') or ''
+	if not content_type.startswith('image/'):
+		return redirect('/students/dashboard/#profile')
+
+	max_size_bytes = 5 * 1024 * 1024
+	if photo.size > max_size_bytes:
+		return redirect('/students/dashboard/#profile')
+
+	if profile.profile_photo:
+		profile.profile_photo.delete(save=False)
+
+	profile.profile_photo = photo
+	profile.save(update_fields=['profile_photo'])
+	return redirect('/students/dashboard/#profile')
 
 
 @require_POST
