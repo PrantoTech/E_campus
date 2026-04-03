@@ -10,9 +10,10 @@ from django.db.models import Case, Count, IntegerField, Sum, When
 from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .models import AcademicCalendarEvent, FeeStructure, StudentAttendance, StudentFeePayment, StudentProfile
+from .models import AcademicCalendarEvent, FeeStructure, StudentAssignment, StudentAssignmentSubmission, StudentAttendance, StudentFeePayment, StudentProfile
 
 
 def _generate_student_id(roll_no: int) -> str:
@@ -175,13 +176,19 @@ def student_dashboard(request):
 
 	month_events_qs = AcademicCalendarEvent.objects.filter(
 		is_active=True,
+		visibility='ALL',
 		event_date__year=selected_year,
 		event_date__month=selected_month_number,
+	).exclude(
+		event_type='Meeting',
 	).order_by('event_date', 'title')
 
 	upcoming_events_qs = AcademicCalendarEvent.objects.filter(
 		is_active=True,
+		visibility='ALL',
 		event_date__gte=today,
+	).exclude(
+		event_type='Meeting',
 	).order_by('event_date', 'title')
 
 	event_badge_map = {
@@ -244,6 +251,7 @@ def student_dashboard(request):
 	fee_payment_rows = []
 	fee_receipts = []
 	fee_recent_payment = None
+	assignment_rows = []
 	fee_summary = {
 		'current_semester_label': '-',
 		'current_fee': 0,
@@ -259,6 +267,24 @@ def student_dashboard(request):
 	}
 
 	if profile is not None:
+		assignment_rows = list(StudentAssignment.objects.filter(
+			is_active=True,
+			course=profile.course,
+			semester=profile.semester,
+		).order_by('due_date', '-created_at')[:8])
+		assignment_ids = [item.id for item in assignment_rows]
+		submission_map = {
+			entry.assignment_id: entry
+			for entry in StudentAssignmentSubmission.objects.filter(student=profile, assignment_id__in=assignment_ids)
+		}
+		assignment_rows = [
+			{
+				'assignment': item,
+				'submission': submission_map.get(item.id),
+			}
+			for item in assignment_rows
+		]
+
 		attendance_qs = StudentAttendance.objects.filter(student=profile)
 		attendance_total_classes = attendance_qs.count()
 		attendance_present_classes = attendance_qs.filter(is_present=True).count()
@@ -362,6 +388,59 @@ def student_dashboard(request):
 		'calendar_cells': calendar_cells,
 		'calendar_upcoming_dates': calendar_upcoming_dates,
 		'calendar_month_events': calendar_month_events,
+		'assignment_rows': assignment_rows,
+	})
+
+
+@require_POST
+@login_required
+def submit_assignment(request):
+	profile = getattr(request.user, 'student_profile', None)
+	if profile is None:
+		return JsonResponse({'success': False, 'message': 'Only students can submit assignments.'}, status=403)
+
+	assignment_id = request.POST.get('assignment_id', '').strip()
+	submission_text = request.POST.get('submission_text', '').strip()
+
+	if not assignment_id or not submission_text:
+		return JsonResponse({'success': False, 'message': 'Assignment and submission text are required.'}, status=400)
+
+	try:
+		assignment_id_int = int(assignment_id)
+	except ValueError:
+		return JsonResponse({'success': False, 'message': 'Invalid assignment id.'}, status=400)
+
+	assignment = StudentAssignment.objects.filter(
+		id=assignment_id_int,
+		is_active=True,
+		course=profile.course,
+		semester=profile.semester,
+	).first()
+	if assignment is None:
+		return JsonResponse({'success': False, 'message': 'Assignment not found for your semester.'}, status=404)
+
+	submission, _created = StudentAssignmentSubmission.objects.update_or_create(
+		assignment=assignment,
+		student=profile,
+		defaults={
+			'submission_text': submission_text,
+			'status': 'Submitted',
+			'marks': None,
+			'feedback': '',
+			'reviewed_by': None,
+			'reviewed_at': None,
+			'submitted_at': timezone.now(),
+		},
+	)
+
+	return JsonResponse({
+		'success': True,
+		'message': 'Assignment submitted successfully.',
+		'submission': {
+			'assignment_id': assignment.id,
+			'status': submission.status,
+			'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+		},
 	})
 
 

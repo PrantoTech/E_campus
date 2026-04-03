@@ -55,3 +55,75 @@ document.addEventListener("DOMContentLoaded", function () {
 function showMessage(pageName) {
   alert("You are now on the " + pageName + " page.");
 }
+
+function getCookie(name) {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(function (row) {
+      return row.startsWith(name + '=');
+    });
+  return cookieValue ? decodeURIComponent(cookieValue.split('=')[1]) : '';
+}
+
+async function submitStudentAssignment(button) {
+  const card = button.closest('.event-card');
+  const statusEl = document.getElementById('student-assignment-message');
+  const submitUrl = statusEl ? statusEl.getAttribute('data-submit-url') : '';
+  const assignmentId = button.getAttribute('data-assignment-id');
+  const textArea = card ? card.querySelector('[data-assignment-field="submission_text"]') : null;
+
+  if (!statusEl || !submitUrl || !assignmentId || !textArea) {
+    return;
+  }
+
+  const submissionText = (textArea.value || '').trim();
+  if (!submissionText) {
+    statusEl.textContent = 'Please write submission text before submit.';
+    statusEl.style.color = '#dc2626';
+    return;
+  }
+
+  const payload = new URLSearchParams();
+  payload.append('assignment_id', assignmentId);
+  payload.append('submission_text', submissionText);
+
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Submitting...';
+
+  try {
+    const response = await fetch(submitUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: payload.toString(),
+    });
+
+    const data = await response.json();
+    if (response.ok && data.success) {
+      statusEl.textContent = data.message + ' (' + data.submission.submitted_at + ')';
+      statusEl.style.color = '#16a34a';
+      button.textContent = 'Resubmit';
+
+      const statusLine = Array.from(card.querySelectorAll('p')).find(function (node) {
+        return node.textContent.trim().startsWith('Status:');
+      });
+      if (statusLine) {
+        statusLine.innerHTML = 'Status: <strong>Submitted</strong>';
+      }
+    } else {
+      statusEl.textContent = data.message || 'Unable to submit assignment.';
+      statusEl.style.color = '#dc2626';
+      button.textContent = originalLabel;
+    }
+  } catch (_error) {
+    statusEl.textContent = 'Unable to submit assignment right now. Please try again.';
+    statusEl.style.color = '#dc2626';
+    button.textContent = originalLabel;
+  } finally {
+    button.disabled = false;
+  }
+}

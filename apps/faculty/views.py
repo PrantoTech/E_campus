@@ -8,10 +8,11 @@ from django.db import transaction
 from django.db.models import Case, Count, IntegerField, Sum, When
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .models import FacultyProfile
-from apps.students.models import StudentAttendance, StudentProfile
+from apps.students.models import AcademicCalendarEvent, StudentAssignment, StudentAssignmentSubmission, StudentAttendance, StudentProfile
 
 
 def _normalize_department(value: str) -> str:
@@ -94,6 +95,10 @@ def _can_assign_advisor(user, advisor_profile: FacultyProfile) -> bool:
         return True
 
     return _normalize_department(advisor_profile.department) == _normalize_department(faculty_profile.department)
+
+
+def _is_faculty_or_admin(user) -> bool:
+    return bool(user.is_superuser or user.is_staff or getattr(user, 'faculty_profile', None) is not None)
 
 
 @require_POST
@@ -234,6 +239,38 @@ def faculty_dashboard(request):
         else:
             advisor_faculty_options = [profile] if profile else []
 
+    faculty_courses = _courses_for_department(profile.department) if profile else set()
+    assignment_qs = StudentAssignment.objects.select_related('posted_by').order_by('due_date', '-created_at')
+    if not is_admin_user:
+        assignment_qs = assignment_qs.filter(course__in=faculty_courses) if faculty_courses else StudentAssignment.objects.none()
+
+    announcement_qs = AcademicCalendarEvent.objects.filter(is_active=True).order_by('-event_date', '-created_at')
+    announcement_rows = []
+    announcement_badges = {
+        'Notice': 'blue',
+        'Event': 'green',
+        'Exam': 'yellow',
+        'Holiday': 'pink',
+        'Meeting': 'pink',
+    }
+    for event in announcement_qs[:12]:
+        announcement_rows.append({
+            'id': event.id,
+            'title': event.title,
+            'event_type': event.event_type,
+            'event_date': event.event_date,
+            'description': event.description,
+            'venue': event.venue,
+            'badge_class': announcement_badges.get(event.event_type, 'blue'),
+            'visibility_label': 'Faculty/Admin' if event.visibility == 'FACULTY_ADMIN' else 'All',
+        })
+
+    assignment_submission_qs = StudentAssignmentSubmission.objects.select_related(
+        'assignment', 'student__user', 'reviewed_by'
+    ).order_by('-submitted_at')
+    if not is_admin_user:
+        assignment_submission_qs = assignment_submission_qs.filter(assignment__course__in=faculty_courses) if faculty_courses else StudentAssignmentSubmission.objects.none()
+
     return render(request, 'faculty_dashboard.html', {
         'profile': profile,
         'display_name': display_name,
@@ -257,6 +294,10 @@ def faculty_dashboard(request):
         'course_choices': StudentProfile.COURSE_CHOICES,
         'semester_choices': StudentProfile.SEMESTER_CHOICES,
         'gender_choices': StudentProfile.GENDER_CHOICES,
+        'assignment_rows': assignment_qs[:20],
+        'announcement_rows': announcement_rows,
+        'announcement_type_choices': AcademicCalendarEvent.EVENT_TYPE_CHOICES,
+        'assignment_submission_rows': assignment_submission_qs[:40],
     })
 
 
@@ -469,6 +510,218 @@ def update_faculty_details(request):
     profile.save(update_fields=['department', 'mobile'])
 
     return JsonResponse({'success': True, 'message': 'Faculty details updated successfully.'})
+
+
+@require_POST
+@login_required
+def create_assignment(request):
+    if not _is_faculty_or_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Only faculty or admin can create assignments.'}, status=403)
+
+    title = request.POST.get('title', '').strip()
+    description = request.POST.get('description', '').strip()
+    course = request.POST.get('course', '').strip()
+    semester = request.POST.get('semester', '').strip()
+    due_date_value = request.POST.get('due_date', '').strip()
+
+    if not all([title, course, semester, due_date_value]):
+        return JsonResponse({'success': False, 'message': 'Title, course, semester and due date are required.'}, status=400)
+
+    if course not in {choice for choice, _ in StudentProfile.COURSE_CHOICES}:
+        return JsonResponse({'success': False, 'message': 'Invalid course value.'}, status=400)
+
+    if semester not in {choice for choice, _ in StudentProfile.SEMESTER_CHOICES}:
+        return JsonResponse({'success': False, 'message': 'Invalid semester value.'}, status=400)
+
+    if not _can_assign_course(request.user, course):
+        return JsonResponse({'success': False, 'message': 'You cannot assign work to this course.'}, status=403)
+
+    try:
+        due_date = date.fromisoformat(due_date_value)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Due date must be valid.'}, status=400)
+
+    assignment = StudentAssignment.objects.create(
+        title=title,
+        description=description,
+        course=course,
+        semester=semester,
+        due_date=due_date,
+        posted_by=request.user,
+    )
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Assignment posted successfully.',
+        'assignment': {
+            'id': assignment.id,
+            'title': assignment.title,
+            'course': assignment.course,
+            'semester': assignment.semester,
+            'due_date': assignment.due_date.isoformat(),
+            'description': assignment.description,
+        },
+    })
+
+
+@require_POST
+@login_required
+def create_announcement(request):
+    if not _is_faculty_or_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Only faculty or admin can post announcements.'}, status=403)
+
+    title = request.POST.get('title', '').strip()
+    event_type = request.POST.get('event_type', '').strip()
+    event_date_value = request.POST.get('event_date', '').strip()
+    venue = request.POST.get('venue', '').strip()
+    description = request.POST.get('description', '').strip()
+
+    if not all([title, event_type, event_date_value]):
+        return JsonResponse({'success': False, 'message': 'Title, type and date are required.'}, status=400)
+
+    valid_types = {choice for choice, _ in AcademicCalendarEvent.EVENT_TYPE_CHOICES}
+    if event_type not in valid_types:
+        return JsonResponse({'success': False, 'message': 'Invalid announcement type.'}, status=400)
+
+    try:
+        event_date = date.fromisoformat(event_date_value)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Event date must be valid.'}, status=400)
+
+    visibility = 'FACULTY_ADMIN' if event_type == 'Meeting' else 'ALL'
+    event = AcademicCalendarEvent.objects.create(
+        title=title,
+        event_type=event_type,
+        event_date=event_date,
+        venue=venue,
+        description=description,
+        visibility=visibility,
+        posted_by=request.user,
+        is_active=True,
+    )
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Announcement posted successfully.',
+        'announcement': {
+            'id': event.id,
+            'title': event.title,
+            'event_type': event.event_type,
+            'event_date': event.event_date.isoformat(),
+            'description': event.description,
+            'venue': event.venue,
+            'visibility': event.visibility,
+        },
+    })
+
+
+@require_POST
+@login_required
+def delete_assignment(request):
+    if not _is_faculty_or_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Only faculty or admin can delete assignments.'}, status=403)
+
+    assignment_id = request.POST.get('assignment_id', '').strip()
+    if not assignment_id:
+        return JsonResponse({'success': False, 'message': 'Assignment id is required.'}, status=400)
+
+    try:
+        assignment_id_int = int(assignment_id)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Invalid assignment id.'}, status=400)
+
+    assignment = StudentAssignment.objects.filter(id=assignment_id_int).first()
+    if assignment is None:
+        return JsonResponse({'success': False, 'message': 'Assignment not found.'}, status=404)
+
+    if not (request.user.is_superuser or request.user.is_staff):
+        if not _can_assign_course(request.user, assignment.course):
+            return JsonResponse({'success': False, 'message': 'You cannot delete this assignment.'}, status=403)
+
+    assignment.delete()
+    return JsonResponse({'success': True, 'message': 'Assignment deleted successfully.', 'assignment_id': assignment_id_int})
+
+
+@require_POST
+@login_required
+def delete_announcement(request):
+    if not _is_faculty_or_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Only faculty or admin can delete announcements.'}, status=403)
+
+    announcement_id = request.POST.get('announcement_id', '').strip()
+    if not announcement_id:
+        return JsonResponse({'success': False, 'message': 'Announcement id is required.'}, status=400)
+
+    try:
+        announcement_id_int = int(announcement_id)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Invalid announcement id.'}, status=400)
+
+    event = AcademicCalendarEvent.objects.filter(id=announcement_id_int).first()
+    if event is None:
+        return JsonResponse({'success': False, 'message': 'Announcement not found.'}, status=404)
+
+    if not (request.user.is_superuser or request.user.is_staff):
+        if event.posted_by_id != request.user.id:
+            return JsonResponse({'success': False, 'message': 'You can delete only your own announcements.'}, status=403)
+
+    event.delete()
+    return JsonResponse({'success': True, 'message': 'Announcement deleted successfully.', 'announcement_id': announcement_id_int})
+
+
+@require_POST
+@login_required
+def review_assignment_submission(request):
+    if not _is_faculty_or_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Only faculty or admin can review submissions.'}, status=403)
+
+    submission_id = request.POST.get('submission_id', '').strip()
+    marks_value = request.POST.get('marks', '').strip()
+    feedback = request.POST.get('feedback', '').strip()
+
+    if not submission_id:
+        return JsonResponse({'success': False, 'message': 'Submission id is required.'}, status=400)
+
+    try:
+        submission_id_int = int(submission_id)
+    except ValueError:
+        return JsonResponse({'success': False, 'message': 'Invalid submission id.'}, status=400)
+
+    submission = StudentAssignmentSubmission.objects.select_related('assignment').filter(id=submission_id_int).first()
+    if submission is None:
+        return JsonResponse({'success': False, 'message': 'Submission not found.'}, status=404)
+
+    if not (request.user.is_superuser or request.user.is_staff):
+        if not _can_assign_course(request.user, submission.assignment.course):
+            return JsonResponse({'success': False, 'message': 'You cannot review this submission.'}, status=403)
+
+    marks = None
+    if marks_value:
+        try:
+            marks = round(float(marks_value), 2)
+        except ValueError:
+            return JsonResponse({'success': False, 'message': 'Marks must be numeric.'}, status=400)
+        if marks < 0 or marks > 100:
+            return JsonResponse({'success': False, 'message': 'Marks must be between 0 and 100.'}, status=400)
+
+    submission.status = 'Reviewed'
+    submission.marks = marks
+    submission.feedback = feedback
+    submission.reviewed_by = request.user
+    submission.reviewed_at = timezone.now()
+    submission.save(update_fields=['status', 'marks', 'feedback', 'reviewed_by', 'reviewed_at'])
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Submission reviewed successfully.',
+        'review': {
+            'submission_id': submission.id,
+            'status': submission.status,
+            'marks': submission.marks,
+            'feedback': submission.feedback,
+            'reviewed_at': submission.reviewed_at.strftime('%Y-%m-%d %H:%M') if submission.reviewed_at else '',
+        },
+    })
 
 
 @require_POST

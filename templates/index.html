@@ -288,54 +288,37 @@
                     <p class="section-sub">Stay updated with important notices and events</p>
                 </div>
                 
+                <div class="announcement-scroll">
                 <div class="announcement-grid">
-                    <div class="announcement-card urgent hover-lift">
+                    {% for item in public_announcements %}
+                    <div class="announcement-card {% if item.event_type == 'Exam' %}urgent{% elif item.event_type == 'Notice' %}info{% else %}normal{% endif %} hover-lift">
                         <div class="ann-date">
-                            <span class="day">15</span>
-                            <span class="month">JAN</span>
+                            <span class="day">{{ item.event_date|date:'d' }}</span>
+                            <span class="month">{{ item.event_date|date:'M'|upper }}</span>
                         </div>
                         <div class="ann-content">
-                            <div class="ann-tag red">🔴 Urgent</div>
-                            <h3>Exam Schedule Released</h3>
-                            <p>Final semester exams from 15th Jan 2025. Download the routine from the student portal.</p>
+                            <div class="ann-tag {% if item.event_type == 'Exam' %}red{% elif item.event_type == 'Notice' %}blue{% elif item.event_type == 'Holiday' %}amber{% else %}green{% endif %}">
+                                {{ item.event_type }}
+                            </div>
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.description|default:'New campus update available.' }}</p>
+                            {% if item.venue %}<p><strong>Venue:</strong> {{ item.venue }}</p>{% endif %}
                         </div>
                     </div>
-
-                    <div class="announcement-card info hover-lift">
-                        <div class="ann-date">
-                            <span class="day">20</span>
-                            <span class="month">JAN</span>
-                        </div>
-                        <div class="ann-content">
-                            <div class="ann-tag blue">📅 Upcoming</div>
-                            <h3>Campus Placement Drive</h3>
-                            <p>TCS and Infosys visiting on 20th Jan. Final year students please register.</p>
-                        </div>
-                    </div>
-
+                    {% empty %}
                     <div class="announcement-card normal hover-lift">
                         <div class="ann-date">
-                            <span class="day">10</span>
-                            <span class="month">JAN</span>
+                            <span class="day">--</span>
+                            <span class="month">---</span>
                         </div>
                         <div class="ann-content">
-                            <div class="ann-tag green">🏃 Sports</div>
-                            <h3>Annual Sports Day</h3>
-                            <p>Registration open till 10th Jan. Events include Cricket, Football, and Athletics.</p>
+                            <div class="ann-tag blue">Info</div>
+                            <h3>No announcements available</h3>
+                            <p>Latest notices and events will appear here.</p>
                         </div>
                     </div>
-
-                    <div class="announcement-card normal hover-lift">
-                        <div class="ann-date">
-                            <span class="day">05</span>
-                            <span class="month">JAN</span>
-                        </div>
-                        <div class="ann-content">
-                            <div class="ann-tag amber">📚 Library</div>
-                            <h3>Library Timing Change</h3>
-                            <p>Extended hours during exam week: 8:00 AM - 10:00 PM.</p>
-                        </div>
-                    </div>
+                    {% endfor %}
+                </div>
                 </div>
             </div>
         </section>

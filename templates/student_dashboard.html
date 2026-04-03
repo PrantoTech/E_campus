@@ -108,27 +108,23 @@
             <h3>Important Updates</h3>
 
             <div class="notice-list">
+              {% for event in calendar_upcoming_dates %}
               <div class="notice-item">
-                <span class="badge blue">Exam</span>
+                <span class="badge {% if event.event_type == 'Exam' %}green{% elif event.event_type == 'Notice' %}blue{% elif event.event_type == 'Holiday' %}pink{% else %}yellow{% endif %}">{{ event.event_type }}</span>
                 <div>
-                  <strong>Internal exam form submission</strong>
-                  <p>Open until 8 April 2026</p>
+                  <strong>{{ event.title }}</strong>
+                  <p>{{ event.event_date|date:'j M Y' }}</p>
                 </div>
               </div>
+              {% empty %}
               <div class="notice-item">
-                <span class="badge pink">Fee</span>
+                <span class="badge blue">Info</span>
                 <div>
-                  <strong>Semester fee installment due</strong>
-                  <p>Pay before 20 April 2026</p>
+                  <strong>No notice available</strong>
+                  <p>Upcoming public updates will appear here.</p>
                 </div>
               </div>
-              <div class="notice-item">
-                <span class="badge green">Class</span>
-                <div>
-                  <strong>Lab batch shifted</strong>
-                  <p>CN Lab moved to Room 302</p>
-                </div>
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -483,6 +479,48 @@
             <p>No academic event is available for this month.</p>
           </div>
           {% endfor %}
+        </div>
+
+        <div class="section-box" style="margin-top: 18px;">
+          <h3>Assigned Work</h3>
+          <p class="sub">Assignments posted for your course and semester</p>
+          <p id="student-assignment-message" class="sub" style="margin-top: 4px;" data-submit-url="{% url 'students:submit_assignment' %}"></p>
+          <div class="event-list">
+            {% for row in assignment_rows %}
+            <div class="event-card">
+              <span class="label yellow">Assignment</span>
+              <h4>{{ row.assignment.title }}</h4>
+              <p>Due: {{ row.assignment.due_date|date:'j F Y' }}</p>
+              <p>Course: {{ row.assignment.course }}, Semester {{ row.assignment.semester }}</p>
+              {% if row.assignment.description %}<p>{{ row.assignment.description }}</p>{% endif %}
+              <p>
+                Status:
+                {% if row.submission %}
+                  <strong>{{ row.submission.status }}</strong>
+                {% else %}
+                  <strong>Not Submitted</strong>
+                {% endif %}
+              </p>
+              {% if row.submission and row.submission.marks is not None %}
+              <p>Marks: <strong>{{ row.submission.marks }}</strong></p>
+              {% endif %}
+              {% if row.submission and row.submission.feedback %}
+              <p>Feedback: {{ row.submission.feedback }}</p>
+              {% endif %}
+
+              <textarea rows="3" placeholder="Write your answer / submission text" data-assignment-field="submission_text">{% if row.submission %}{{ row.submission.submission_text }}{% endif %}</textarea>
+              <button class="btn" type="button" data-assignment-id="{{ row.assignment.id }}" onclick="submitStudentAssignment(this)">
+                {% if row.submission %}Resubmit{% else %}Submit{% endif %}
+              </button>
+            </div>
+            {% empty %}
+            <div class="event-card">
+              <span class="label blue">Info</span>
+              <h4>No assignments yet</h4>
+              <p>Faculty assignments will show here once published.</p>
+            </div>
+            {% endfor %}
+          </div>
         </div>
       </section>
 

@@ -1,13 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_POST
 
+from apps.students.models import AcademicCalendarEvent
+
 def home(request):
-    return render(request, 'index.html')
+    public_announcements = AcademicCalendarEvent.objects.filter(
+        is_active=True,
+        visibility='ALL',
+    ).exclude(
+        event_type='Meeting',
+    ).order_by('-event_date', '-created_at')[:6]
+    return render(request, 'index.html', {'public_announcements': public_announcements})
 
 def image_gallery(request):
     return render(request, 'image_gallery.html')
+
+
+def admin_logout_redirect(request):
+    logout(request)
+    return redirect('/')
 
 
 @require_POST

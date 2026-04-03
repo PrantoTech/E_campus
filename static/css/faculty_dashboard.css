@@ -590,6 +590,11 @@ tbody td select:focus {
   border-color: #bbf7d0;
 }
 
+.yellow-light {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
 .tag {
   display: inline-block;
   padding: 7px 12px;
@@ -611,6 +616,11 @@ tbody td select:focus {
 .green-tag {
   background: #dcfce7;
   color: #16a34a;
+}
+
+.yellow-tag {
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .profile-summary {

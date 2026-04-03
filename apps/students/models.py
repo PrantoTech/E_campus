@@ -96,6 +96,12 @@ class AcademicCalendarEvent(models.Model):
 		('Holiday', 'Holiday'),
 		('Exam', 'Exam'),
 		('Notice', 'Notice'),
+		('Meeting', 'Meeting'),
+	]
+
+	VISIBILITY_CHOICES = [
+		('ALL', 'All Users'),
+		('FACULTY_ADMIN', 'Faculty and Admin Only'),
 	]
 
 	title = models.CharField(max_length=200)
@@ -103,6 +109,8 @@ class AcademicCalendarEvent(models.Model):
 	event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES, default='Event')
 	description = models.TextField(blank=True)
 	venue = models.CharField(max_length=200, blank=True)
+	visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='ALL')
+	posted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='posted_academic_events')
 	is_active = models.BooleanField(default=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
@@ -111,6 +119,54 @@ class AcademicCalendarEvent(models.Model):
 
 	def __str__(self):
 		return f"{self.event_date} - {self.title}"
+
+
+class StudentAssignment(models.Model):
+	COURSE_CHOICES = StudentProfile.COURSE_CHOICES
+	SEMESTER_CHOICES = StudentProfile.SEMESTER_CHOICES
+
+	title = models.CharField(max_length=200)
+	description = models.TextField(blank=True)
+	course = models.CharField(max_length=10, choices=COURSE_CHOICES)
+	semester = models.CharField(max_length=1, choices=SEMESTER_CHOICES)
+	due_date = models.DateField()
+	posted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='posted_student_assignments')
+	is_active = models.BooleanField(default=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		ordering = ['due_date', '-created_at']
+
+	def __str__(self):
+		return f"{self.course}-Sem{self.semester}: {self.title}"
+
+
+class StudentAssignmentSubmission(models.Model):
+	STATUS_CHOICES = [
+		('Submitted', 'Submitted'),
+		('Reviewed', 'Reviewed'),
+	]
+
+	assignment = models.ForeignKey(StudentAssignment, on_delete=models.CASCADE, related_name='submissions')
+	student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='assignment_submissions')
+	submission_text = models.TextField()
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Submitted')
+	marks = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+	feedback = models.TextField(blank=True)
+	reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_assignment_submissions')
+	reviewed_at = models.DateTimeField(null=True, blank=True)
+	submitted_at = models.DateTimeField(auto_now=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ['-submitted_at']
+		constraints = [
+			models.UniqueConstraint(fields=['assignment', 'student'], name='unique_assignment_submission_per_student'),
+		]
+
+	def __str__(self):
+		return f"{self.student.student_id} - {self.assignment.title}"
 
 
 class FeeStructure(models.Model):

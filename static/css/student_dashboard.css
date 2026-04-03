@@ -657,6 +657,16 @@ table tbody tr {
   color: #db2777;
 }
 
+.label.green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.label.yellow {
+  background: #fef3c7;
+  color: #b45309;
+}
+
 .profile-grid {
   display: grid;
   grid-template-columns: 220px 1fr;

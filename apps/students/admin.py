@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import AcademicCalendarEvent, FeeStructure, StudentAttendance, StudentFeePayment, StudentProfile
+from .models import AcademicCalendarEvent, FeeStructure, StudentAssignment, StudentAssignmentSubmission, StudentAttendance, StudentFeePayment, StudentProfile
+
+
+admin.site.site_header = 'E-Campus Admin'
+admin.site.site_title = 'E-Campus Admin Portal'
+admin.site.index_title = 'Campus Operations'
 
 
 @admin.register(StudentProfile)
@@ -19,10 +24,26 @@ class StudentAttendanceAdmin(admin.ModelAdmin):
 
 @admin.register(AcademicCalendarEvent)
 class AcademicCalendarEventAdmin(admin.ModelAdmin):
-	list_display = ('title', 'event_date', 'event_type', 'venue', 'is_active')
-	list_filter = ('event_type', 'is_active', 'event_date')
+	list_display = ('title', 'event_date', 'event_type', 'visibility', 'venue', 'is_active')
+	list_filter = ('event_type', 'visibility', 'is_active', 'event_date')
 	search_fields = ('title', 'description', 'venue')
 	ordering = ('event_date', 'title')
+
+
+@admin.register(StudentAssignment)
+class StudentAssignmentAdmin(admin.ModelAdmin):
+	list_display = ('title', 'course', 'semester', 'due_date', 'is_active', 'posted_by')
+	list_filter = ('course', 'semester', 'is_active', 'due_date')
+	search_fields = ('title', 'description', 'course', 'semester')
+	ordering = ('due_date', '-created_at')
+
+
+@admin.register(StudentAssignmentSubmission)
+class StudentAssignmentSubmissionAdmin(admin.ModelAdmin):
+	list_display = ('assignment', 'student', 'status', 'marks', 'submitted_at', 'reviewed_by')
+	list_filter = ('status', 'assignment__course', 'assignment__semester', 'submitted_at')
+	search_fields = ('assignment__title', 'student__student_id', 'student__user__first_name', 'feedback')
+	ordering = ('-submitted_at',)
 
 
 @admin.register(FeeStructure)

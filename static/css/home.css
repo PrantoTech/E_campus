@@ -762,6 +762,25 @@ body {
     gap: 2rem;
 }
 
+.announcement-scroll {
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.announcement-scroll .announcement-grid {
+    grid-template-columns: 1fr;
+}
+
+.announcement-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.announcement-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
 .announcement-card {
     background: white;
     border-radius: var(--radius);
@@ -1167,6 +1186,9 @@ body {
     .announcement-grid {
         grid-template-columns: repeat(2, 1fr);
     } /* Added for announcements */
+    .announcement-scroll .announcement-grid {
+        grid-template-columns: 1fr;
+    }
     .gallery-grid {
         grid-template-columns: repeat(3, 1fr);
     }

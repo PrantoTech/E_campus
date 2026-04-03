@@ -10,7 +10,7 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/faculty_dashboard.css' %}" />
 </head>
-<body>
+<body class="faculty-dashboard">
   <form style="display: none;" aria-hidden="true">
     {% csrf_token %}
   </form>
@@ -631,60 +631,132 @@
         <div class="card">
           <div class="card-header-wrap">
             <div>
-              <h3>Faculty Assignment Panel</h3>
-              <p>Admin can assign or update all faculty profile data</p>
+              <h3>Assign Work to Students</h3>
+              <p>Create assignments course and semester wise for students</p>
             </div>
-            <button class="pink-btn" type="button" disabled>Admin Controls</button>
+            <button class="pink-btn" type="button" onclick="submitAssignmentForm()">Post Assignment</button>
           </div>
 
-          <p id="faculty-update-message" class="user-role" style="margin-bottom: 12px;"></p>
+          <p id="assignment-update-message" class="user-role" style="margin-bottom: 12px;"></p>
+
+          <div class="form-grid" style="margin-bottom: 20px;">
+            <div class="form-group">
+              <label>Assignment Title</label>
+              <input id="assignment-title" type="text" placeholder="Enter assignment title">
+            </div>
+
+            <div class="form-group">
+              <label>Course</label>
+              <select id="assignment-course">
+                <option value="">Select course</option>
+                {% for code, label in course_choices %}
+                <option value="{{ code }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Semester</label>
+              <select id="assignment-semester">
+                <option value="">Select semester</option>
+                {% for sem_code, sem_label in semester_choices %}
+                <option value="{{ sem_code }}">{{ sem_label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Due Date</label>
+              <input id="assignment-due-date" type="date">
+            </div>
+
+            <div class="form-group wide">
+              <label>Instructions</label>
+              <textarea id="assignment-description" rows="3" placeholder="Write assignment instructions"></textarea>
+            </div>
+          </div>
 
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Faculty ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Department</th>
-                  <th>Mobile</th>
-                  <th>DOB</th>
+                  <th>Title</th>
+                  <th>Course</th>
+                  <th>Semester</th>
+                  <th>Due Date</th>
+                  <th>Description</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="assignment-list-body" data-create-url="{% url 'faculty:create_assignment' %}" data-delete-url="{% url 'faculty:delete_assignment' %}">
+                {% for assignment in assignment_rows %}
+                <tr data-assignment-id="{{ assignment.id }}" data-delete-url="{% url 'faculty:delete_assignment' %}">
+                  <td>{{ assignment.title }}</td>
+                  <td>{{ assignment.course }}</td>
+                  <td>{{ assignment.semester }}</td>
+                  <td>{{ assignment.due_date|date:'j M Y' }}</td>
+                  <td>{{ assignment.description|default:'-' }}</td>
+                  <td>
+                    <button class="dark-btn" type="button" onclick="deleteAssignment(this)">Delete</button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6">No assignments posted yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-header-wrap">
+            <div>
+              <h3>Student Submissions</h3>
+              <p>Review submitted assignments with marks and feedback</p>
+            </div>
+          </div>
+
+          <p id="assignment-review-message" class="user-role" style="margin-bottom: 12px;"></p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Assignment</th>
+                  <th>Course/Sem</th>
+                  <th>Submitted</th>
+                  <th>Answer</th>
+                  <th>Marks</th>
+                  <th>Feedback</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {% if is_admin_user %}
-                {% for faculty in faculty_profiles %}
+                {% for row in assignment_submission_rows %}
                 <tr>
+                  <td>{{ row.student.user.get_full_name|default:row.student.student_id }} ({{ row.student.student_id }})</td>
+                  <td>{{ row.assignment.title }}</td>
+                  <td>{{ row.assignment.course }} / {{ row.assignment.semester }}</td>
+                  <td>{{ row.submitted_at|date:'j M Y H:i' }}</td>
+                  <td>{{ row.submission_text|truncatechars:120 }}</td>
+                  <td><input type="number" min="0" max="100" step="0.01" value="{{ row.marks|default_if_none:'' }}" data-review-field="marks"></td>
+                  <td><input type="text" value="{{ row.feedback|default_if_none:'' }}" data-review-field="feedback"></td>
+                  <td>{{ row.status }}</td>
                   <td>
-                    {{ faculty.faculty_id|default:'-' }}
-                    <input type="hidden" value="{{ faculty.faculty_id }}" data-faculty-field="faculty_id">
-                  </td>
-                  <td><input type="text" value="{{ faculty.user.first_name|default_if_none:'' }}" data-faculty-field="full_name" placeholder="-"></td>
-                  <td><input type="email" value="{{ faculty.user.email|default_if_none:'' }}" data-faculty-field="email" placeholder="-"></td>
-                  <td><input type="text" value="{{ faculty.department|default_if_none:'' }}" data-faculty-field="department" placeholder="-"></td>
-                  <td><input type="text" value="{{ faculty.mobile|default_if_none:'' }}" data-faculty-field="mobile" placeholder="-"></td>
-                  <td>{{ faculty.date_of_birth|date:'Y-m-d'|default:'-' }}</td>
-                  <td>
-                    <button
-                      class="dark-btn"
-                      type="button"
-                      data-update-url="{% url 'faculty:update_faculty_details' %}"
-                      onclick="saveFacultyDetails(this)">
-                      Save
+                    <button class="dark-btn" type="button" data-review-url="{% url 'faculty:review_assignment_submission' %}" data-submission-id="{{ row.id }}" onclick="reviewAssignmentSubmission(this)">
+                      Save Review
                     </button>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="7">No faculty profiles available.</td>
+                  <td colspan="9">No assignment submissions yet.</td>
                 </tr>
                 {% endfor %}
-                {% else %}
-                <tr>
-                  <td colspan="7">Only admin can assign or update faculty details.</td>
-                </tr>
-                {% endif %}
               </tbody>
             </table>
           </div>
@@ -696,24 +768,24 @@
         <div class="two-column-grid">
           <div class="card">
             <h3 class="section-title">Recent Notices</h3>
+            <p id="announcement-update-message" class="user-role" style="margin-bottom: 12px;"></p>
 
+            {% for notice in announcement_rows %}
+            <div class="info-card {% if notice.badge_class == 'pink' %}pink-light{% elif notice.badge_class == 'green' %}green-light{% elif notice.badge_class == 'yellow' %}yellow-light{% else %}blue-light{% endif %}" data-announcement-id="{{ notice.id }}" data-delete-url="{% url 'faculty:delete_announcement' %}">
+              <span class="tag {% if notice.badge_class == 'pink' %}pink-tag{% elif notice.badge_class == 'green' %}green-tag{% elif notice.badge_class == 'yellow' %}yellow-tag{% else %}blue-tag{% endif %}">{{ notice.event_type }}</span>
+              <h4>{{ notice.title }}</h4>
+              <p>{{ notice.event_date|date:'j M Y' }}{% if notice.venue %} · {{ notice.venue }}{% endif %}</p>
+              {% if notice.description %}<p>{{ notice.description }}</p>{% endif %}
+              <p><strong>Visible To:</strong> {{ notice.visibility_label }}</p>
+              <button class="dark-btn" type="button" style="margin-top: 10px;" onclick="deleteAnnouncement(this)">Delete Notice</button>
+            </div>
+            {% empty %}
             <div class="info-card blue-light">
-              <span class="tag blue-tag">Notice</span>
-              <h4>Internal Exam Schedule</h4>
-              <p>All faculty members are requested to submit question papers before 8 April.</p>
+              <span class="tag blue-tag">Info</span>
+              <h4>No notices available</h4>
+              <p>Post the first announcement from the panel.</p>
             </div>
-
-            <div class="info-card pink-light">
-              <span class="tag pink-tag">Meeting</span>
-              <h4>Departmental Meeting</h4>
-              <p>Meeting on 12 April at 3:30 PM in Conference Hall.</p>
-            </div>
-
-            <div class="info-card green-light">
-              <span class="tag green-tag">Workshop</span>
-              <h4>AI Teaching Tools Workshop</h4>
-              <p>Faculty development session on 18 April.</p>
-            </div>
+            {% endfor %}
           </div>
 
           <div class="card">
@@ -722,21 +794,36 @@
             <div class="form-grid single-column">
               <div class="form-group">
                 <label>Title</label>
-                <input type="text" placeholder="Enter announcement title">
+                <input id="announcement-title" type="text" placeholder="Enter announcement title">
               </div>
 
               <div class="form-group">
                 <label>Category</label>
-                <input type="text" placeholder="Notice / Meeting / Event">
+                <select id="announcement-type">
+                  {% for type_value, type_label in announcement_type_choices %}
+                  <option value="{{ type_value }}">{{ type_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Date</label>
+                <input id="announcement-date" type="date">
+              </div>
+
+              <div class="form-group">
+                <label>Venue (optional)</label>
+                <input id="announcement-venue" type="text" placeholder="Room / Hall / Online">
               </div>
 
               <div class="form-group">
                 <label>Message</label>
-                <textarea placeholder="Write announcement details"></textarea>
+                <textarea id="announcement-description" placeholder="Write announcement details"></textarea>
               </div>
             </div>
 
-            <button class="dark-btn mt-20">Post Announcement</button>
+            <button id="announcement-submit-btn" class="dark-btn mt-20" data-create-url="{% url 'faculty:create_announcement' %}" onclick="submitAnnouncementForm()">Post Announcement</button>
+            <p style="margin-top: 10px; color: #64748b;">Meeting posts are visible only to faculty and admin users.</p>
           </div>
         </div>
       </section>
