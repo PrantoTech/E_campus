@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/home_footer.css' %}">
 </head>
 <body>
+    <main style="display: contents;">
     <div id="app-wrapper">
 
         <!--Navbar-->
@@ -62,7 +63,7 @@
         </nav>
 
         <!--Hero Section-->
-        <main>
+        <div>
         <section id="home" class="hero-section">
             <div class="hero-bg">
                 <div class="banner-slide">
@@ -416,7 +417,7 @@
                 </div>
             </div>
         </section>
-        </main>
+        </div>
 
         <!-- Include Footer -->
         {% include "home_footer.html" %}
@@ -446,7 +447,7 @@
                         <input type="password" id="login-password" required placeholder="Enter password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
-                    <div class="form-link-row">
+                    <div id="forgot-password-row" class="form-link-row">
                         <a onclick="openForgotPasswordForm()">Forgot Password?</a>
                     </div>
                 </form>
@@ -454,8 +455,8 @@
                 <form id="forgot-password-form" class="hidden">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label>Student ID *</label>
-                        <input type="text" id="forgot-student-id" required placeholder="Enter student ID (e.g. TPI55)">
+                        <label id="forgot-id-label">Student ID *</label>
+                        <input type="text" id="forgot-user-id" required placeholder="Enter student ID (e.g. TPI55)">
                     </div>
                     <div class="form-group">
                         <label>Date of Birth *</label>
@@ -475,7 +476,7 @@
                     </div>
                 </form>
                 <div id="login-success" class="alert alert-success hidden">✅ Login successful!</div>
-                <div class="signUp">
+                <div id="create-account-row" class="signUp">
                     <a onclick="openSignUpModal()">Create an account</a>
                 </div>
             </div>
@@ -587,5 +588,6 @@
     </div>
 
     <script src="{% static 'js/home.js' %}"></script>
+    </main>
 </body>
 </html>

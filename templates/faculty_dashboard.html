@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculty Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/faculty_dashboard.css' %}" />
+</head>
+<body>
+  <form style="display: none;" aria-hidden="true">
+    {% csrf_token %}
+  </form>
+  <main style="display: contents;">
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <h1 class="logo">🎓 Academy</h1>
+        <p class="subtitle">Faculty Dashboard</p>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-link active" onclick="showPage('overview', this)">
+          <span class="nav-icon">📊</span>
+          <span>Overview</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('schedule', this)">
+          <span class="nav-icon">🗓️</span>
+          <span>Class Schedule</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('attendance', this)">
+          <span class="nav-icon">✅</span>
+          <span>Attendance</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('students', this)">
+          <span class="nav-icon">🧑‍🎓</span>
+          <span>Student Details</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('assignments', this)">
+          <span class="nav-icon">📝</span>
+          <span>Assignments</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('announcements', this)">
+          <span class="nav-icon">📢</span>
+          <span>Announcements</span>
+        </button>
+
+        <button class="nav-link" onclick="showPage('profile', this)">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </button>
+      </nav>
+
+      <div class="user-card">
+        <p class="user-label">Logged in as</p>
+        <h3>{{ display_name }}</h3>
+        <p class="user-role">
+          {% if is_admin_user %}
+            Admin
+          {% else %}
+            Faculty Member · {{ profile.department|default:'Department Not Set' }}
+          {% endif %}
+        </p>
+      </div>
+
+      <form action="{% url 'faculty:logout' %}" method="post" class="faculty-logout-form" style="margin-top: 16px;">
+        {% csrf_token %}
+        <button type="submit" class="dark-btn" style="width: 100%;">Logout</button>
+      </form>
+
+      <div class="sidebar-footer">
+        © 2026 Faculty Portal
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <header class="top-header">
+        <div>
+          <h2>Welcome Back, {{ display_name }} 👋</h2>
+          <p>Manage student records for {{ scope_label }}.</p>
+        </div>
+
+        <div class="header-actions">
+          <div class="profile-badge">
+            {% if profile and profile.profile_photo %}
+              <img src="{{ profile.profile_photo.url }}" alt="{{ display_name }} profile photo" class="profile-avatar-image">
+            {% else %}
+              {{ avatar_text }}
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <!-- OVERVIEW -->
+      <section id="overview" class="page active">
+        <div class="stats-grid">
+          <div class="card stat-card">
+            <div class="stat-top">
+              <p>Total Classes Today</p>
+              <span>🏫</span>
+            </div>
+            <h3>5</h3>
+            <small>2 classes completed</small>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-top">
+              <p>Total Students</p>
+              <span>👨‍🎓</span>
+            </div>
+            <h3>{{ students_count }}</h3>
+            <small>
+              {% if is_admin_user %}
+                Across all departments
+              {% else %}
+                In {{ scope_label }}
+              {% endif %}
+            </small>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-top">
+              <p>Faculty Records</p>
+              <span>📚</span>
+            </div>
+            <h3 class="orange-text">{{ faculty_profiles|length }}</h3>
+            <small>Admin managed</small>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-top">
+              <p>Attendance Rate</p>
+              <span>📈</span>
+            </div>
+            <h3 class="green-text">{{ overall_attendance_percentage }}%</h3>
+            <small>Calculated from saved attendance records</small>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="card large-card">
+            <div class="card-header">
+              <h3>Today's Classes</h3>
+              <span>Faculty Routine</span>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="time">10:00 - 11:00</p>
+                <h4>Object Oriented Programming - 4th Sem</h4>
+                <p class="meta">Room 208 · Section A</p>
+              </div>
+
+              <div class="timeline-item">
+                <p class="time">11:00 - 12:00</p>
+                <h4>JAVA Lab - 4th Sem</h4>
+                <p class="meta">Lab 1 · Section A</p>
+              </div>
+
+              <div class="timeline-item">
+                <p class="time">01:00 - 02:00</p>
+                <h4>Software Engineering - 5th Sem</h4>
+                <p class="meta">Room 305 · Section B</p>
+              </div>
+
+              <div class="timeline-item">
+                <p class="time">02:00 - 03:00</p>
+                <h4>Project Guidance Session</h4>
+                <p class="meta">Seminar Room · Final Year Students</p>
+              </div>
+
+              <div class="timeline-item">
+                <p class="time">03:30 - 04:30</p>
+                <h4>Department Meeting</h4>
+                <p class="meta">Conference Hall</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title">Quick Actions</h3>
+
+            <div class="action-list">
+              <button class="action-btn">Take Attendance</button>
+              <button class="action-btn">Upload Assignment</button>
+              <button class="action-btn">Post Notice</button>
+              <button class="action-btn">View Reports</button>
+            </div>
+
+            <h3 class="section-title second-title">Performance</h3>
+
+            <div class="progress-block">
+              <div class="progress-label">
+                <span>Classes Completed</span>
+                <span>72%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill blue" style="width: 72%;"></div>
+              </div>
+            </div>
+
+            <div class="progress-block">
+              <div class="progress-label">
+                <span>Assignments Reviewed</span>
+                <span>64%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill pink" style="width: 64%;"></div>
+              </div>
+            </div>
+
+            <div class="progress-block">
+              <div class="progress-label">
+                <span>Attendance Uploaded</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill green" style="width: 90%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE -->
+      <section id="schedule" class="page">
+        <div class="card">
+          <div class="card-header-wrap">
+            <div>
+              <h3>Weekly Class Schedule</h3>
+              <p>Faculty teaching routine</p>
+            </div>
+            <button class="dark-btn">Download Routine</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Subject</th>
+                  <th>Semester</th>
+                  <th>Room/Lab</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Monday</td>
+                  <td>10:00 - 11:00</td>
+                  <td>OOP using JAVA</td>
+                  <td>4th Sem</td>
+                  <td>Room 208</td>
+                </tr>
+                <tr>
+                  <td>Tuesday</td>
+                  <td>12:00 - 01:00</td>
+                  <td>JAVA Lab</td>
+                  <td>4th Sem</td>
+                  <td>Lab 1</td>
+                </tr>
+                <tr>
+                  <td>Wednesday</td>
+                  <td>01:00 - 02:00</td>
+                  <td>Software Engineering</td>
+                  <td>5th Sem</td>
+                  <td>Room 305</td>
+                </tr>
+                <tr>
+                  <td>Thursday</td>
+                  <td>11:00 - 12:00</td>
+                  <td>Project Guidance</td>
+                  <td>Final Year</td>
+                  <td>Seminar Room</td>
+                </tr>
+                <tr>
+                  <td>Friday</td>
+                  <td>02:00 - 03:00</td>
+                  <td>Revision Class</td>
+                  <td>4th Sem</td>
+                  <td>Room 210</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ATTENDANCE -->
+      <section id="attendance" class="page">
+        <div class="card">
+          <div class="card-header-wrap">
+            <div>
+              <h3>Mark Student Attendance</h3>
+              <p>Record Present/Absent and review month-wise attendance report.</p>
+            </div>
+
+            <form method="get" style="display: flex; align-items: center; gap: 8px;">
+              <input type="month" name="month" value="{{ selected_month }}">
+              <button class="dark-btn" type="submit">Load Month</button>
+            </form>
+          </div>
+
+          <div class="stats-grid" style="margin-bottom: 16px;">
+            <div class="card stat-card">
+              <div class="stat-top"><p>Selected Month</p><span>🗓️</span></div>
+              <h3>{{ selected_month_label }}</h3>
+              <small>Month-wise attendance view</small>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-top"><p>Classes Marked</p><span>📋</span></div>
+              <h3>{{ monthly_total_entries }}</h3>
+              <small>{{ monthly_students_marked }} students have entries</small>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-top"><p>Present Entries</p><span>✅</span></div>
+              <h3>{{ monthly_present_entries }}</h3>
+              <small>Absent: {{ monthly_absent_entries }}</small>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-top"><p>Month Avg Attendance</p><span>📈</span></div>
+              <h3 class="green-text">{{ monthly_average_percentage }}%</h3>
+              <small>Computed from database records</small>
+            </div>
+          </div>
+
+          <div class="card-header-wrap" style="margin-bottom: 12px;">
+            <div>
+              <h3 style="margin: 0;">Take Attendance</h3>
+              <p style="margin: 4px 0 0;">Choose date and save each student status.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="attendance-date">Attendance Date</label>
+              <input id="attendance-date" type="date" value="{{ selected_attendance_date }}">
+            </div>
+          </div>
+
+          <p id="attendance-update-message" class="user-role" style="margin-bottom: 12px;"></p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Semester</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in attendance_rows %}
+                <tr>
+                  <td>{{ row.student.roll_no }}</td>
+                  <td>
+                    {{ row.student.student_id }}
+                    <input type="hidden" data-attendance-field="student_id" value="{{ row.student.student_id }}">
+                  </td>
+                  <td>{{ row.student.user.first_name|default:'-' }}</td>
+                  <td>{{ row.student.get_course_display }}</td>
+                  <td>{{ row.student.semester }}</td>
+                  <td>
+                    <select data-attendance-field="status">
+                      <option value="present" {% if row.selected_day_status == 'Present' %}selected{% endif %}>Present</option>
+                      <option value="absent" {% if row.selected_day_status == 'Absent' %}selected{% endif %}>Absent</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button
+                      class="dark-btn"
+                      type="button"
+                      data-update-url="{% url 'faculty:mark_student_attendance' %}"
+                      onclick="saveAttendance(this)">
+                      Save
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7">No students found for attendance in your access scope.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card-header-wrap" style="margin: 18px 0 12px;">
+            <div>
+              <h3 style="margin: 0;">Month-wise Attendance Report</h3>
+              <p style="margin: 4px 0 0;">Not subject-wise. Report is generated by student for {{ selected_month_label }}.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Month Present</th>
+                  <th>Month Absent</th>
+                  <th>Month Total</th>
+                  <th>Month %</th>
+                  <th>Overall Avg %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in attendance_rows %}
+                <tr>
+                  <td>{{ row.student.student_id }}</td>
+                  <td>{{ row.student.user.first_name|default:'-' }}</td>
+                  <td>{{ row.month_present }}</td>
+                  <td>{{ row.month_absent }}</td>
+                  <td>{{ row.month_total }}</td>
+                  <td>{{ row.month_percentage }}%</td>
+                  <td>{{ row.overall_percentage }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7">No attendance data available.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDENT DETAILS -->
+      <section id="students" class="page">
+        <div class="card">
+          <div class="card-header-wrap">
+            <div>
+              <h3>Student Details</h3>
+              <p>
+                {% if is_admin_user %}
+                Showing students across all departments.
+                {% else %}
+                Showing students from your department scope: {{ scope_label }}.
+                {% endif %}
+                Click Show Details to open a large editable form.
+              </p>
+            </div>
+            <button class="dark-btn" type="button">Sync Data</button>
+          </div>
+
+          <p id="student-update-message" class="user-role" style="margin-bottom: 12px;"></p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Semester</th>
+                  <th>Mobile</th>
+                  <th>GPA</th>
+                  <th>Advisor</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in students %}
+                <tr
+                  class="student-row"
+                  data-student-id="{{ student.student_id|default_if_none:'' }}"
+                  data-roll-no="{{ student.roll_no|default_if_none:'' }}"
+                  data-full-name="{{ student.user.first_name|default_if_none:'' }}"
+                  data-email="{{ student.user.email|default_if_none:'' }}"
+                  data-course="{{ student.course|default_if_none:'' }}"
+                  data-gender="{{ student.gender|default_if_none:'' }}"
+                  data-semester="{{ student.semester|default_if_none:'' }}"
+                  data-date-of-birth="{{ student.date_of_birth|date:'Y-m-d' }}"
+                  data-mobile="{{ student.mobile|default_if_none:'' }}"
+                  data-overall-gpa="{{ student.overall_gpa|default_if_none:'' }}"
+                  data-advisor-faculty-id="{{ student.advisor_faculty.faculty_id|default_if_none:'' }}"
+                  data-advisor-name="{% if student.advisor_faculty %}{{ student.advisor_faculty.user.get_full_name|default:student.advisor_faculty.faculty_id }} ({{ student.advisor_faculty.faculty_id }}){% endif %}"
+                  data-guardian-name="{{ student.guardian_name|default_if_none:'' }}"
+                  data-guardian-contact="{{ student.guardian_contact|default_if_none:'' }}"
+                  data-address="{{ student.address|default_if_none:'' }}"
+                >
+                  <td>{{ student.roll_no|default:'-' }}</td>
+                  <td>{{ student.student_id|default:'-' }}</td>
+                  <td>{{ student.user.first_name|default:'-' }}</td>
+                  <td>{{ student.get_course_display|default:'-' }}</td>
+                  <td>{{ student.semester|default:'-' }}</td>
+                  <td>{{ student.mobile|default:'-' }}</td>
+                  <td>{% if student.overall_gpa is not None %}{{ student.overall_gpa }}{% else %}-{% endif %}</td>
+                  <td>{% if student.advisor_faculty %}{{ student.advisor_faculty.user.get_full_name|default:student.advisor_faculty.faculty_id }} ({{ student.advisor_faculty.faculty_id }}){% else %}-{% endif %}</td>
+                  <td>
+                    <button
+                      class="dark-btn"
+                      type="button"
+                      data-update-url="{% url 'faculty:update_student_details' %}"
+                      onclick="openStudentEditModal(this)">
+                      Show Details
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="9">No students found for your access scope.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="student-edit-modal" class="student-edit-modal" aria-hidden="true">
+          <div class="student-edit-dialog">
+            <div class="student-edit-header">
+              <h3>Update Student Details</h3>
+              <button class="student-modal-close" type="button" onclick="closeStudentEditModal()">Close</button>
+            </div>
+
+            <div class="student-form-grid">
+              <div class="form-group wide">
+                <label>Student ID</label>
+                <input id="student-modal-student-id" type="text" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Roll No</label>
+                <input id="student-modal-roll-no" type="number" min="1">
+              </div>
+
+              <div class="form-group">
+                <label>Full Name</label>
+                <input id="student-modal-full-name" type="text">
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input id="student-modal-email" type="email">
+              </div>
+
+              <div class="form-group">
+                <label>Course</label>
+                <select id="student-modal-course">
+                  {% for code, label in course_choices %}
+                  <option value="{{ code }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Gender</label>
+                <select id="student-modal-gender">
+                  {% for code, label in gender_choices %}
+                  <option value="{{ code }}">{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Semester</label>
+                <select id="student-modal-semester">
+                  {% for sem_code, sem_label in semester_choices %}
+                  <option value="{{ sem_code }}">{{ sem_label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Date of Birth</label>
+                <input id="student-modal-date-of-birth" type="date">
+              </div>
+
+              <div class="form-group">
+                <label>Mobile</label>
+                <input id="student-modal-mobile" type="text">
+              </div>
+
+              <div class="form-group">
+                <label>Overall GPA</label>
+                <input id="student-modal-overall-gpa" type="number" min="0" max="10" step="0.01">
+              </div>
+
+              <div class="form-group wide">
+                <label>Advisor</label>
+                <select id="student-modal-advisor-faculty-id">
+                  <option value="">Unassigned</option>
+                  {% for advisor in advisor_faculty_options %}
+                  <option value="{{ advisor.faculty_id }}">{{ advisor.user.get_full_name|default:advisor.faculty_id }} ({{ advisor.faculty_id }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Guardian Name</label>
+                <input id="student-modal-guardian-name" type="text">
+              </div>
+
+              <div class="form-group">
+                <label>Guardian Contact</label>
+                <input id="student-modal-guardian-contact" type="text">
+              </div>
+
+              <div class="form-group wide">
+                <label>Address</label>
+                <textarea id="student-modal-address" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="student-modal-actions">
+              <button class="dark-btn" type="button" onclick="closeStudentEditModal()">Cancel</button>
+              <button id="student-modal-save-btn" class="pink-btn" type="button" onclick="saveStudentDetailsFromModal()">Update Student</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ASSIGNMENTS -->
+      <section id="assignments" class="page">
+        <div class="card">
+          <div class="card-header-wrap">
+            <div>
+              <h3>Faculty Assignment Panel</h3>
+              <p>Admin can assign or update all faculty profile data</p>
+            </div>
+            <button class="pink-btn" type="button" disabled>Admin Controls</button>
+          </div>
+
+          <p id="faculty-update-message" class="user-role" style="margin-bottom: 12px;"></p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Faculty ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                  <th>Mobile</th>
+                  <th>DOB</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if is_admin_user %}
+                {% for faculty in faculty_profiles %}
+                <tr>
+                  <td>
+                    {{ faculty.faculty_id|default:'-' }}
+                    <input type="hidden" value="{{ faculty.faculty_id }}" data-faculty-field="faculty_id">
+                  </td>
+                  <td><input type="text" value="{{ faculty.user.first_name|default_if_none:'' }}" data-faculty-field="full_name" placeholder="-"></td>
+                  <td><input type="email" value="{{ faculty.user.email|default_if_none:'' }}" data-faculty-field="email" placeholder="-"></td>
+                  <td><input type="text" value="{{ faculty.department|default_if_none:'' }}" data-faculty-field="department" placeholder="-"></td>
+                  <td><input type="text" value="{{ faculty.mobile|default_if_none:'' }}" data-faculty-field="mobile" placeholder="-"></td>
+                  <td>{{ faculty.date_of_birth|date:'Y-m-d'|default:'-' }}</td>
+                  <td>
+                    <button
+                      class="dark-btn"
+                      type="button"
+                      data-update-url="{% url 'faculty:update_faculty_details' %}"
+                      onclick="saveFacultyDetails(this)">
+                      Save
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7">No faculty profiles available.</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td colspan="7">Only admin can assign or update faculty details.</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANNOUNCEMENTS -->
+      <section id="announcements" class="page">
+        <div class="two-column-grid">
+          <div class="card">
+            <h3 class="section-title">Recent Notices</h3>
+
+            <div class="info-card blue-light">
+              <span class="tag blue-tag">Notice</span>
+              <h4>Internal Exam Schedule</h4>
+              <p>All faculty members are requested to submit question papers before 8 April.</p>
+            </div>
+
+            <div class="info-card pink-light">
+              <span class="tag pink-tag">Meeting</span>
+              <h4>Departmental Meeting</h4>
+              <p>Meeting on 12 April at 3:30 PM in Conference Hall.</p>
+            </div>
+
+            <div class="info-card green-light">
+              <span class="tag green-tag">Workshop</span>
+              <h4>AI Teaching Tools Workshop</h4>
+              <p>Faculty development session on 18 April.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title">Post Announcement</h3>
+
+            <div class="form-grid single-column">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" placeholder="Enter announcement title">
+              </div>
+
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" placeholder="Notice / Meeting / Event">
+              </div>
+
+              <div class="form-group">
+                <label>Message</label>
+                <textarea placeholder="Write announcement details"></textarea>
+              </div>
+            </div>
+
+            <button class="dark-btn mt-20">Post Announcement</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile" class="page">
+        <div class="profile-grid">
+          <div class="card profile-summary">
+            <div class="big-profile-badge">
+              {% if profile and profile.profile_photo %}
+                <img src="{{ profile.profile_photo.url }}" alt="{{ display_name }} profile photo" class="profile-avatar-image">
+              {% else %}
+                {{ avatar_text }}
+              {% endif %}
+              {% if profile %}
+              <form action="{% url 'faculty:upload_photo' %}" method="post" enctype="multipart/form-data" class="photo-upload-form-inline">
+                {% csrf_token %}
+                <input id="faculty-profile-photo-input" type="file" name="profile_photo" accept="image/*" required class="photo-input-hidden" onchange="this.form.submit()">
+                <label for="faculty-profile-photo-input" class="photo-edit-button" title="Change profile photo" aria-label="Change profile photo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M4 20h4l10-10a2 2 0 0 0-4-4L4 16v4z"></path>
+                    <path d="M13.5 6.5l4 4"></path>
+                  </svg>
+                </label>
+              </form>
+              {% endif %}
+            </div>
+            <h3>{{ display_name }}</h3>
+            <p>
+              {% if is_admin_user %}
+                System Administrator
+              {% else %}
+                Faculty Member
+              {% endif %}
+            </p>
+
+            <div class="profile-meta">
+              <div><span>Faculty ID</span><strong>{{ profile.faculty_id|default:'ADMIN' }}</strong></div>
+              <div><span>Department</span><strong>{{ profile.department|default:'-' }}</strong></div>
+              <div><span>Email</span><strong>{{ request.user.email|default:'-' }}</strong></div>
+              <div><span>Mobile</span><strong>{{ profile.mobile|default:'-' }}</strong></div>
+            </div>
+          </div>
+
+          <div class="card profile-form-card">
+            <h3 class="section-title">Faculty Information</h3>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" value="{{ display_name }}" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="{{ request.user.email|default:'' }}" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="text" value="{{ profile.mobile|default:'-' }}" readonly>
+              </div>
+
+              <div class="form-group">
+                <label>Department</label>
+                <input type="text" value="{{ profile.department|default:'-' }}" readonly>
+              </div>
+            </div>
+
+            <button class="dark-btn mt-20" type="button" disabled>Profile updates managed by admin</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="{% static 'js/faculty_dashboard.js' %}"></script>
+  </main>
+</body>
+</html>

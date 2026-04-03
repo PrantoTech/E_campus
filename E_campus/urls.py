@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin-login/', views.admin_login, name='admin_login'),
     path('image_gallery/', views.image_gallery, name='image_gallery'),
     path('students/', include('apps.students.urls')),
+    path('faculty/', include('apps.faculty.urls')),
 ]
 
 if settings.DEBUG:

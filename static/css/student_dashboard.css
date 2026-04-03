@@ -1,3 +1,6 @@
+:root {
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -552,12 +555,51 @@ table tbody tr {
   gap: 12px;
 }
 
+.calendar-weekdays {
+  margin-bottom: 10px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .day {
   background: #f1f5f9;
   padding: 18px;
   text-align: center;
   border-radius: 14px;
   font-weight: 600;
+}
+
+.day.day-empty {
+  background: transparent;
+  border: 1px dashed #e2e8f0;
+}
+
+.day.day-today {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.day.day-has-event {
+  position: relative;
+  border: 1px solid #93c5fd;
+}
+
+.day.day-has-event::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2563eb;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
 }
 
 .day.blue {

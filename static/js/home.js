@@ -70,8 +70,8 @@ function openForgotPasswordForm() {
     const modalTitle = document.querySelector('#login-modal .modal-header h3');
     const modalSubtitle = document.querySelector('#login-modal .modal-header p');
 
-    if (currentLoginType !== 'student') {
-        showToast('Forgot password is available for Student login only.', 'error');
+    if (currentLoginType === 'admin') {
+        showToast('Forgot password is not available for Admin login.', 'error');
         return;
     }
 
@@ -84,7 +84,9 @@ function openForgotPasswordForm() {
         modalTitle.textContent = 'Reset Password';
     }
     if (modalSubtitle) {
-        modalSubtitle.textContent = 'Verify using Student ID and DOB';
+        modalSubtitle.textContent = currentLoginType === 'faculty'
+            ? 'Verify using Faculty ID and DOB'
+            : 'Verify using Student ID and DOB';
     }
 }
 
@@ -113,22 +115,67 @@ function switchLoginType(type) {
     const facultyTab = document.getElementById('login-tab-faculty');
     const adminTab = document.getElementById('login-tab-admin');
     const idLabel = document.getElementById('login-id-label');
+    const loginIdInput = document.getElementById('login-id');
+    const forgotRow = document.getElementById('forgot-password-row');
+    const forgotIdLabel = document.getElementById('forgot-id-label');
+    const forgotUserIdInput = document.getElementById('forgot-user-id');
+    const createAccountRow = document.getElementById('create-account-row');
     
     if (type === 'student') {
         studentTab.classList.add('active');
         facultyTab.classList.remove('active');
         adminTab.classList.remove('active');
         idLabel.textContent = 'Email *';
+        if (loginIdInput) {
+            loginIdInput.placeholder = 'Enter email';
+        }
+        if (forgotRow) {
+            forgotRow.classList.remove('hidden');
+        }
+        if (forgotIdLabel) {
+            forgotIdLabel.textContent = 'Student ID *';
+        }
+        if (forgotUserIdInput) {
+            forgotUserIdInput.placeholder = 'Enter student ID (e.g. TPI55)';
+        }
+        if (createAccountRow) {
+            createAccountRow.classList.remove('hidden');
+        }
     } else if (type === 'faculty') {
         facultyTab.classList.add('active');
         studentTab.classList.remove('active');
         adminTab.classList.remove('active');
-        idLabel.textContent = 'Faculty ID *';
+        idLabel.textContent = 'Email *';
+        if (loginIdInput) {
+            loginIdInput.placeholder = 'Enter faculty email';
+        }
+        if (forgotRow) {
+            forgotRow.classList.remove('hidden');
+        }
+        if (forgotIdLabel) {
+            forgotIdLabel.textContent = 'Faculty ID *';
+        }
+        if (forgotUserIdInput) {
+            forgotUserIdInput.placeholder = 'Enter faculty ID (e.g. FAC101)';
+        }
+        if (createAccountRow) {
+            createAccountRow.classList.add('hidden');
+        }
     } else {
         adminTab.classList.add('active');
         facultyTab.classList.remove('active');
         studentTab.classList.remove('active');
         idLabel.textContent = 'Admin Username *';
+        if (loginIdInput) {
+            loginIdInput.placeholder = 'Enter admin username';
+        }
+        if (forgotRow) {
+            forgotRow.classList.add('hidden');
+        }
+        if (createAccountRow) {
+            createAccountRow.classList.add('hidden');
+        }
+        backToLoginForm();
     }
 }
 
@@ -228,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         forgotPasswordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const studentId = document.getElementById('forgot-student-id').value.trim();
+            const userId = document.getElementById('forgot-user-id').value.trim();
             const dob = document.getElementById('forgot-dob').value;
             const newPassword = document.getElementById('forgot-new-password').value;
             const confirmPassword = document.getElementById('forgot-confirm-password').value;
@@ -238,19 +285,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (currentLoginType === 'admin') {
+                showToast('Forgot password is not available for Admin login.', 'error');
+                return;
+            }
+
+            const endpoint = currentLoginType === 'faculty'
+                ? '/faculty/forgot-password/'
+                : '/students/forgot-password/';
+
+            const payload = {
+                dob,
+                new_password: newPassword,
+                confirm_password: confirmPassword,
+            };
+
+            if (currentLoginType === 'faculty') {
+                payload.faculty_id = userId;
+            } else {
+                payload.student_id = userId;
+            }
+
             try {
-                const response = await fetch('/students/forgot-password/', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-CSRFToken': getCSRFToken(),
                     },
-                    body: new URLSearchParams({
-                        student_id: studentId,
-                        dob,
-                        new_password: newPassword,
-                        confirm_password: confirmPassword,
-                    }),
+                    body: new URLSearchParams(payload),
                 });
 
                 const result = await parseApiResponse(response);
@@ -258,8 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && result.success) {
                     showToast(result.message || 'Password reset successful.', 'success');
                     const loginIdField = document.getElementById('login-id');
-                    if (loginIdField && result.email) {
-                        loginIdField.value = result.email;
+                    if (loginIdField && result.login_id) {
+                        loginIdField.value = result.login_id;
                     }
                     forgotPasswordForm.reset();
                     backToLoginForm();
@@ -311,7 +374,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (currentLoginType === 'faculty') {
-                showToast('Faculty login is not configured yet.', 'error');
+                try {
+                    const response = await fetch('/faculty/login/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                        body: new URLSearchParams({
+                            email: loginId,
+                            password,
+                        }),
+                    });
+
+                    const result = await parseApiResponse(response);
+
+                    if (response.ok && result.success) {
+                        document.getElementById('login-success').classList.remove('hidden');
+                        showToast('Faculty login successful!', 'success');
+                        window.location.href = result.redirect_url || '/faculty/dashboard/';
+                    } else {
+                        showToast(result.message || 'Invalid faculty credentials.', 'error');
+                    }
+                } catch (error) {
+                    showToast('Unable to login right now. Please try again.', 'error');
+                }
                 return;
             }
 
