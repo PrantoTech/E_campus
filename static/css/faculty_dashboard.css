@@ -13,6 +13,7 @@ body {
   font-family: 'Inter', sans-serif;
   background: #f1f5f9;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
 button,
@@ -116,6 +117,7 @@ textarea {
   flex: 1;
   padding: 24px 32px;
   overflow-y: auto;
+  min-width: 0;
 }
 
 .top-header {
@@ -489,6 +491,20 @@ textarea {
 
 .table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.card-header-wrap form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-header-wrap input,
+.card-header-wrap select,
+.card-header-wrap button {
+  max-width: 100%;
 }
 
 table {
@@ -821,6 +837,12 @@ tbody td select:focus {
     width: 100%;
   }
 
+  .nav-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
   .main-content {
     padding: 20px;
   }
@@ -840,6 +862,44 @@ tbody td select:focus {
 
   .top-header h2 {
     font-size: 28px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .card-header-wrap {
+    align-items: stretch;
+  }
+
+  .card-header-wrap form,
+  .card-header-wrap > div[style*="display: flex"] {
+    width: 100%;
+  }
+
+  .card-header-wrap form input,
+  .card-header-wrap form button,
+  .card-header-wrap > div[style*="display: flex"] input,
+  .card-header-wrap > div[style*="display: flex"] button,
+  .card-header-wrap > div[style*="display: flex"] select {
+    width: 100%;
+  }
+
+  .student-edit-modal {
+    padding: 12px;
+  }
+
+  .student-edit-dialog {
+    max-height: calc(100vh - 24px);
+    padding: 14px;
+  }
+
+  .nav-menu {
+    grid-template-columns: 1fr;
   }
 
   .student-form-grid {

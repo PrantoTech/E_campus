@@ -11,6 +11,7 @@
 body {
   background: #f1f5f9;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
 .student-chip {
@@ -240,6 +241,7 @@ body {
 .main {
   flex: 1;
   padding: 30px;
+  min-width: 0;
 }
 
 .page-section {
@@ -327,6 +329,17 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+}
+
+.topbar form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.topbar input[type="month"] {
+  max-width: 100%;
 }
 
 .profile-detail {
@@ -495,6 +508,7 @@ body {
 
 .table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -633,6 +647,12 @@ table tbody tr {
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   background: white;
+  min-width: 0;
+}
+
+.event-card textarea {
+  width: 100%;
+  max-width: 100%;
 }
 
 .event-card h4 {
@@ -780,6 +800,10 @@ table tbody tr {
     grid-template-columns: 1fr;
   }
 
+  .profile-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
   .profile-avatar {
     width: 150px;
     height: 150px;
@@ -819,6 +843,10 @@ table tbody tr {
     text-align: left;
   }
 
+  .nav-logout-form {
+    width: 100%;
+  }
+
   .navbar.nav-open .nav-links {
     display: flex;
   }
@@ -849,6 +877,15 @@ table tbody tr {
     gap: 15px;
   }
 
+  .topbar form {
+    width: 100%;
+  }
+
+  .topbar form input,
+  .topbar form button {
+    width: 100%;
+  }
+
   .hero-card-head {
     flex-direction: column;
   }
@@ -862,8 +899,26 @@ table tbody tr {
     flex-direction: column;
   }
 
+  .timeline-item strong {
+    min-width: 0;
+  }
+
+  .notice-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .main {
     padding: 18px;
+  }
+
+  .student-chip {
+    width: 100%;
+    text-align: center;
+  }
+
+  .day {
+    padding: 12px;
   }
 
   .profile-avatar {
