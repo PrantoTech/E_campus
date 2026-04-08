@@ -255,6 +255,7 @@ def student_dashboard(request):
 	fee_summary = {
 		'current_semester_label': '-',
 		'current_fee': 0,
+		'current_pending_balance': 0,
 		'paid_total': 0,
 		'pending_balance': 0,
 		'clearance_percentage': 0.0,
@@ -355,6 +356,7 @@ def student_dashboard(request):
 			current_pending = max(fee_current_structure.total_fee - current_paid_total, 0)
 			fee_summary['current_semester_label'] = f"Semester {fee_current_structure.semester}"
 			fee_summary['current_fee'] = fee_current_structure.total_fee
+			fee_summary['current_pending_balance'] = current_pending
 			fee_summary['payment_mode'] = fee_payment_map.get(fee_current_structure.id, {}).get('latest_mode', '-')
 			fee_summary['due_date'] = fee_current_structure.due_date
 			fee_summary['current_due_message'] = 'Current semester fee is fully cleared.' if current_pending == 0 else 'Current semester fee is pending.'

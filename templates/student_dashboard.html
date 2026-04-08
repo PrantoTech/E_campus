@@ -92,8 +92,8 @@
               </div>
               <div class="metric">
                 <span>Fees Due</span>
-                <strong>₹30,000</strong>
-                <small>Due by 20 April</small>
+                <strong>{% if fee_current_structure %}₹{{ fee_summary.current_pending_balance|floatformat:0 }}{% else %}-{% endif %}</strong>
+                <small>{% if fee_summary.due_date %}Due by {{ fee_summary.due_date|date:'j F' }}{% else %}No fee structure available{% endif %}</small>
               </div>
               <div class="metric">
                 <span>Classes Today</span>
