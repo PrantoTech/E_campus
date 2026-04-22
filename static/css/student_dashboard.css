@@ -14,6 +14,10 @@ body {
   overflow-x: hidden;
 }
 
+body.nav-menu-open {
+  overflow: hidden;
+}
+
 .student-chip {
   padding: 10px 14px;
   border-radius: 999px;
@@ -817,30 +821,97 @@ table tbody tr {
 
 @media (max-width: 600px) {
   .navbar {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    row-gap: 10px;
     padding: 16px 18px;
+    align-items: flex-start;
+    position: relative;
+    z-index: 30;
+  }
+
+  .navbar::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.34);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 40;
+  }
+
+  .navbar.nav-open::after {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .logo {
+    flex: 1;
+    min-width: 0;
+    max-width: calc(100% - 58px);
+  }
+
+  .logo h1 {
+    font-size: clamp(16px, 4.6vw, 20px);
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .logo p {
+    font-size: 12px;
+    margin-top: 4px;
   }
 
   .menu-toggle {
     display: inline-flex;
-    margin-left: auto;
+    flex: 0 0 46px;
+    align-self: start;
+    justify-self: end;
+    z-index: 60;
   }
 
   .nav-links {
-    display: none;
-    width: 100%;
+    display: flex;
+    width: min(84vw, 320px);
     align-items: stretch;
     flex-direction: column;
-    padding-top: 8px;
+    gap: 6px;
+    padding: 20px 14px 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    border-radius: 0 20px 20px 0;
+    border-right: 1px solid rgba(148, 163, 184, 0.35);
+    background: #0b1224;
+    box-shadow: 0 18px 45px rgba(2, 6, 23, 0.45);
+    transform: translateX(-115%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.26s ease, opacity 0.22s ease;
+    z-index: 50;
   }
 
   .nav-links a {
     width: 100%;
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .nav-logout-btn {
     width: 100%;
     text-align: left;
+    padding: 12px 14px;
+    border-radius: 10px;
   }
 
   .nav-logout-form {
@@ -848,7 +919,10 @@ table tbody tr {
   }
 
   .navbar.nav-open .nav-links {
-    display: flex;
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .navbar.nav-open .menu-toggle span:nth-child(1) {

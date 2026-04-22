@@ -19,10 +19,14 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   if (navbar && toggleButton) {
+    const navContainer = navbar.querySelector(".nav-links");
+    const mobileQuery = window.matchMedia("(max-width: 600px)");
+
     // Controls mobile menu expansion state.
     const setExpanded = function (isExpanded) {
       navbar.classList.toggle("nav-open", isExpanded);
       toggleButton.setAttribute("aria-expanded", String(isExpanded));
+      document.body.classList.toggle("nav-menu-open", isExpanded && mobileQuery.matches);
     };
 
     toggleButton.addEventListener("click", function () {
@@ -48,6 +52,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     window.addEventListener("hashchange", function () {
       showSection(window.location.hash.replace("#", ""));
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!navbar.classList.contains("nav-open")) {
+        return;
+      }
+
+      const clickedInsideMenu = navContainer && navContainer.contains(event.target);
+      const clickedToggle = toggleButton.contains(event.target);
+
+      if (!clickedInsideMenu && !clickedToggle) {
+        setExpanded(false);
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && navbar.classList.contains("nav-open")) {
+        setExpanded(false);
+      }
+    });
+
+    window.addEventListener("resize", function () {
+      if (!mobileQuery.matches) {
+        setExpanded(false);
+      }
     });
   }
 });
