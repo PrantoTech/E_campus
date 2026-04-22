@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/home_footer.css' %}">
     <link rel="stylesheet" href="{% static 'css\image_gallery.css' %}">
@@ -23,16 +26,16 @@
             </div>
 
             <div class="nav-links desktop-only">
-                <a href="#" class="nav-link">Main Building</a>
-                <a href="#about" class="nav-link">Science Lab</a>
-                <a href="#courses" class="nav-link">Computer Lab</a>
-                <a href="#announcements" class="nav-link">Library</a>
-                <a href="#gallery" class="nav-link">Workshop</a>
-                <a href="#contact" class="nav-link">Sports Ground</a>
-                <a href="#contact" class="nav-link">Covocation</a>
-                <a href="#contact" class="nav-link">Sports Day</a>
-                <a href="#contact" class="nav-link">Tech Fest</a>
-                <a href="#contact" class="nav-link">Cultural Night</a>
+                <a href="?section=mainBuilding" class="nav-link" data-gallery-section="mainBuilding">Main Building</a>
+                <a href="?section=scienceLab" class="nav-link" data-gallery-section="scienceLab">Science Lab</a>
+                <a href="?section=computerLab" class="nav-link" data-gallery-section="computerLab">Computer Lab</a>
+                <a href="?section=library" class="nav-link" data-gallery-section="library">Library</a>
+                <a href="?section=workshop" class="nav-link" data-gallery-section="workshop">Workshop</a>
+                <a href="?section=sportsGround" class="nav-link" data-gallery-section="sportsGround">Sports Ground</a>
+                <a href="?section=convocation" class="nav-link" data-gallery-section="convocation">Convocation</a>
+                <a href="?section=sportsDay" class="nav-link" data-gallery-section="sportsDay">Sports Day</a>
+                <a href="?section=techFest" class="nav-link" data-gallery-section="techFest">Tech Fest</a>
+                <a href="?section=culturalNight" class="nav-link" data-gallery-section="culturalNight">Cultural Night</a>
             </div>
 
             <button onclick="toggleMobileMenu()" class="mobile-menu-btn">
@@ -44,69 +47,192 @@
 
         <!--Menu Section-->
         <div id="mobile-menu" class="mobile-menu">
-            <a href="#home" onclick="closeMobileMenu()">Main Building</a>
-            <a href="#about" onclick="closeMobileMenu()">Science Lab</a>
-            <a href="#courses" onclick="closeMobileMenu()">Computer Lab</a>
-            <a href="#announcements" onclick="closeMobileMenu()">Library</a>
-            <a href="#gallery" onclick="closeMobileMenu()">Workshop</a>
-            <a href="#contact" onclick="closeMobileMenu()">Sports Ground</a>
-            <a href="#contact" onclick="closeMobileMenu()">Convocation</a>
-            <a href="#contact" onclick="closeMobileMenu()">Sports Day</a>
-            <a href="#contact" onclick="closeMobileMenu()">Tech Fest</a>
-            <a href="#contact" onclick="closeMobileMenu()">Cultural Night</a>
+            <a href="?section=mainBuilding" data-gallery-section="mainBuilding">Main Building</a>
+            <a href="?section=scienceLab" data-gallery-section="scienceLab">Science Lab</a>
+            <a href="?section=computerLab" data-gallery-section="computerLab">Computer Lab</a>
+            <a href="?section=library" data-gallery-section="library">Library</a>
+            <a href="?section=workshop" data-gallery-section="workshop">Workshop</a>
+            <a href="?section=sportsGround" data-gallery-section="sportsGround">Sports Ground</a>
+            <a href="?section=convocation" data-gallery-section="convocation">Convocation</a>
+            <a href="?section=sportsDay" data-gallery-section="sportsDay">Sports Day</a>
+            <a href="?section=techFest" data-gallery-section="techFest">Tech Fest</a>
+            <a href="?section=culturalNight" data-gallery-section="culturalNight">Cultural Night</a>
         </div>
     </nav>
 
     <!--  Main Building Image  -->
     <section id="mainBuilding" class="mainBuilding hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Main Building</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/campus.jpeg" alt="Main campus building view">
+                    <figcaption>Main Building Front View</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/campus2.jpeg" alt="Main campus side view">
+                    <figcaption>Main Building Side View</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/img1.jpeg" alt="Campus infrastructure image">
+                    <figcaption>Campus Infrastructure</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!---  Science lab image  -->
     <section id="scienceLab" class="scienceLab hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Science Lab</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/IOTLab.jpeg" alt="Science and IoT lab setup">
+                    <figcaption>Lab Setup</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!-- Computer Lab Image -->
     <section id="computerLab" class="computerLab hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Computer Lab</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/CstLab1.jpeg" alt="Computer lab with systems">
+                    <figcaption>Computer Lab - Batch 1</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/CstLab2.jpeg" alt="Students in computer science lab">
+                    <figcaption>Computer Lab - Batch 2</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/faculty2.jpeg" alt="Faculty in computer lab session">
+                    <figcaption>Computer Lab Session</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!--  Library Image  -->
     <section id="library" class="library hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Library</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/library.jpeg" alt="College library section">
+                    <figcaption>Central Library</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!-- Workshop image  -->
     <section id="workshop" class="workshop hidden">
         <div class="contains">
-            
+            <h2 class="section-title">Workshop</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/IOTLab.jpeg" alt="Workshop practical session area">
+                    <figcaption>Workshop Practical Session</figcaption>
+                </figure>
+            </div>
         </div>
     </section>
 
     <!--  Sports ground image-->
     <section id="sportsGround" class="sportsGround hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Sports Ground</h2>
+            <div class="gallery-grid">
+                <div class="empty-gallery">Sports Ground photos will be updated soon.</div>
+            </div>
+        </div>
     </section>
 
     <!--  Convocation image  -->
     <section id="convocation" class="convocation hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Convocation</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/fest2.jpeg" alt="Convocation style celebration">
+                    <figcaption>Graduation Celebration</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!--  sports day image  -->
     <section id="sportsDay" class="sportsDay hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Sports Day</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/cricket.jpeg" alt="Cricket match during sports day">
+                    <figcaption>Cricket Match</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/cricket2.jpeg" alt="Students in sports day cricket event">
+                    <figcaption>Inter-Department Match</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/batminton.jpeg" alt="Badminton event during sports day">
+                    <figcaption>Badminton Event</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/batminton2.jpeg" alt="Sports day badminton event">
+                    <figcaption>Indoor Tournament</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/batminton3.jpeg" alt="Students participating in sports day">
+                    <figcaption>Sports Participation</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!-- Tech fest image-->
     <section id="techFest" class="techFest hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Tech Fest</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/fest.jpeg" alt="Students participating in tech fest">
+                    <figcaption>Tech Fest Highlights</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/fest4.jpeg" alt="Tech event stage program">
+                    <figcaption>Innovation Showcase</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/img2.jpeg" alt="College building decorated during fest">
+                    <figcaption>Fest at Main Campus</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <!-- cultural night image -->
     <section id="culturalNight" class="culturalNight hidden">
-        <div class="contains"></div>
+        <div class="contains">
+            <h2 class="section-title">Cultural Night</h2>
+            <div class="gallery-grid">
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/fest3.jpeg" alt="Cultural night performances">
+                    <figcaption>Stage Performances</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/fest2.jpeg" alt="Students in cultural program">
+                    <figcaption>Campus Cultural Program</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <img src="/media/image_gallery/faculty.jpeg" alt="Faculty participation during cultural night">
+                    <figcaption>Cultural Night Team</figcaption>
+                </figure>
+            </div>
+        </div>
     </section>
 
     {% include "home_footer.html" %}

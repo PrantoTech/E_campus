@@ -886,6 +886,12 @@ body {
     gap: 1rem;
 }
 
+.gallery-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .gallery-item {
     aspect-ratio: 1;
     border-radius: 0.75rem;

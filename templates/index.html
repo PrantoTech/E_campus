@@ -335,19 +335,19 @@
                 </div>
                 
                 <div id="gallery-campus" class="gallery-grid">
-                    <div class="gallery-item bg-blue"><span>🏛️</span><p>Main Building</p></div>
-                    <div class="gallery-item bg-green"><span>🔬</span><p>Science Lab</p></div>
-                    <div class="gallery-item bg-purple"><span>💻</span><p>Computer Lab</p></div>
-                    <div class="gallery-item bg-orange"><span>📚</span><p>Library</p></div>
-                    <div class="gallery-item bg-teal"><span>🏭</span><p>Workshop</p></div>
-                    <div class="gallery-item bg-pink"><span>🎾</span><p>Sports Ground</p></div>
+                    <a href="{% url 'image_gallery' %}?section=mainBuilding" class="gallery-link"><div class="gallery-item bg-blue"><span>🏛️</span><p>Main Building</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=scienceLab" class="gallery-link"><div class="gallery-item bg-green"><span>🔬</span><p>Science Lab</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=computerLab" class="gallery-link"><div class="gallery-item bg-purple"><span>💻</span><p>Computer Lab</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=library" class="gallery-link"><div class="gallery-item bg-orange"><span>📚</span><p>Library</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=workshop" class="gallery-link"><div class="gallery-item bg-teal"><span>🏭</span><p>Workshop</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=sportsGround" class="gallery-link"><div class="gallery-item bg-pink"><span>🎾</span><p>Sports Ground</p></div></a>
                 </div>
 
                 <div id="gallery-events" class="gallery-grid hidden">
-                    <div class="gallery-item bg-pink"><span>🎓</span><p>Convocation</p></div>
-                    <div class="gallery-item bg-cyan"><span>🏆</span><p>Sports Day</p></div>
-                    <div class="gallery-item bg-rose"><span>🎪</span><p>Tech Fest</p></div>
-                    <div class="gallery-item bg-lime"><span>🎤</span><p>Cultural Night</p></div>
+                    <a href="{% url 'image_gallery' %}?section=convocation" class="gallery-link"><div class="gallery-item bg-pink"><span>🎓</span><p>Convocation</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=sportsDay" class="gallery-link"><div class="gallery-item bg-cyan"><span>🏆</span><p>Sports Day</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=techFest" class="gallery-link"><div class="gallery-item bg-rose"><span>🎪</span><p>Tech Fest</p></div></a>
+                    <a href="{% url 'image_gallery' %}?section=culturalNight" class="gallery-link"><div class="gallery-item bg-lime"><span>🎤</span><p>Cultural Night</p></div></a>
                 </div>
             </div>
         </section>
